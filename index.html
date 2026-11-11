@@ -53,8 +53,8 @@ input,select,button,textarea{font-family:var(--font)}
 
 .screen{display:none;min-height:100vh}
 .screen.active{display:flex;flex-direction:column}
-#screen-login.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#1a3060 100%)}
-#screen-pending.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#1a3060 100%)}
+#screen-login.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#5a3a1e 100%)}
+#screen-pending.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#5a3a1e 100%)}
 #screen-owner.active{flex-direction:row}
 #screen-employee.active{flex-direction:column;background:var(--bg)}
 #screen-admin.active{flex-direction:column;background:var(--bg)}
@@ -348,7 +348,7 @@ input,select,button,textarea{font-family:var(--font)}
   .pc-hint b{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;color:var(--text)}
 }
 
-#demo-wall{position:fixed;inset:0;background:linear-gradient(145deg,var(--navy),#1a3060);display:none;align-items:center;justify-content:center;z-index:9990;padding:24px}
+#demo-wall{position:fixed;inset:0;background:linear-gradient(145deg,var(--navy),#5a3a1e);display:none;align-items:center;justify-content:center;z-index:9990;padding:24px}
 #demo-wall.open{display:flex}
 .demo-card{background:var(--surface);border-radius:20px;padding:36px 28px;width:100%;max-width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.4);animation:fadeUp .4s ease both}
 .demo-icon{font-size:56px;margin-bottom:16px}
@@ -366,7 +366,7 @@ input,select,button,textarea{font-family:var(--font)}
 .demo-badge.vencida{background:var(--red-bg);color:var(--red)}
 .demo-badge.completa{background:var(--green-bg);color:var(--green)}
 
-#screen-invite.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy),#1a3060);padding:24px}
+#screen-invite.active{align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy),#5a3a1e);padding:24px}
 .invite-card{background:var(--surface);border-radius:20px;padding:40px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.4)}
 .invite-card-icon{font-size:52px;margin-bottom:12px}
 .invite-card-negocio{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
@@ -375,7 +375,7 @@ input,select,button,textarea{font-family:var(--font)}
 .invite-expired{background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--radius);padding:14px;color:var(--red);font-size:14px;font-weight:600;margin-bottom:16px}
 .invite-section{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
 .invite-section-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
-.invite-banner-box{background:linear-gradient(135deg,#0f1e3d,#1d4ed8);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.invite-banner-box{background:linear-gradient(135deg,#3b2412,#8a5a2b);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
 .invite-banner-icon{font-size:26px;flex-shrink:0}
 .invite-banner-title{font-size:14px;font-weight:800;color:#fff}
 .invite-banner-sub{font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
@@ -424,8 +424,8 @@ body, input, button, select, textarea {
 }
 .btn-tomate, .btn-primary, [class*="btn-rojo"], [class*="btn-cobrar"] {
   border-radius: 14px !important;
-  background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
-  box-shadow: 0 5px 18px rgba(192,57,43,.45), 0 2px 6px rgba(192,57,43,.2) !important;
+  background: linear-gradient(135deg, #6b4220, #8a5a2b) !important;
+  box-shadow: 0 5px 18px rgba(90,58,30,.4), 0 2px 6px rgba(90,58,30,.2) !important;
   transition: transform .12s ease, box-shadow .12s ease !important;
   font-weight: 700 !important;
   letter-spacing: .01em !important;
@@ -486,6 +486,7 @@ button[class*="metodo"]:active, button[class*="pago"]:active {
 /* ──────────────────────────────────────────────────── */
 
 body.pv-basico .depto-chips,body.pv-basico #card-deptos{display:none!important}
+#btn-google,#btn-google:disabled{background:#fff!important;color:#2a1c10!important;border:2px solid #e5dccf!important;box-shadow:0 2px 8px rgba(42,28,16,.12)!important}
 </style>
 <script>
 // RavenTechs PWA Banner v1.1 — en el HEAD para capturar beforeinstallprompt temprano
@@ -633,7 +634,7 @@ var __rtPWA = (function() {
 
 <!-- LOGIN -->
 <!-- LOADING -->
-<div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#1a3060 100%);z-index:9999">
+<div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,var(--navy) 0%,#5a3a1e 100%);z-index:9999">
   <div style="text-align:center">
     <div style="width:90px;height:60px;overflow:hidden;position:relative;margin:0 auto 14px">
       <span style="position:absolute;top:6px;animation:moneyBounce 1.6s ease-in-out infinite">
@@ -660,7 +661,7 @@ var __rtPWA = (function() {
       <div class="brand-name">Mader<span>AR</span></div>
     </div>
     <div class="auth-title" id="auth-title">Bienvenido</div>
-    <div class="auth-sub">Tus ventas, tu caja y tus cuentas, ordenadas</div>
+    <div class="auth-sub">Tu maderera: ventas, stock y sucursales, ordenados</div>
     <div class="role-selector" style="display:none">
       <div class="role-opt active" id="mode-single">
         <div class="role-opt-icon">🪵</div>
@@ -681,7 +682,7 @@ var __rtPWA = (function() {
     <div class="auth-err" id="auth-err"></div>
     <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="tu@email.com"/></div>
     <div class="field"><label>Contraseña</label><input id="f-pass" type="password" placeholder="••••••••"/></div>
-    <div class="field" id="field-negocio-nombre"><label>Nombre de tu negocio</label><input id="f-negocio-nombre" placeholder="Almacén Don José"/></div>
+    <div class="field" id="field-negocio-nombre"><label>Nombre de tu negocio</label><input id="f-negocio-nombre" placeholder="Maderera Don José"/></div>
     <button class="btn-primary" id="btn-auth">Ingresar →</button>
     <div class="auth-toggle"><span id="toggle-mode">Registrarse</span></div>
   </div>
@@ -2786,17 +2787,18 @@ document.getElementById('btn-venta').addEventListener('click',async()=>{
   }catch(e){toast('Error al registrar','err');}
 });
 document.getElementById("btn-google").addEventListener("click",async()=>{
-  const btn=document.getElementById("btn-google");
+  const btn=document.getElementById("btn-google"),htmlOrig=btn.innerHTML;
   btn.disabled=true;btn.textContent="Conectando...";
   try{
     const provider=(window.rtProv||function(p){return p})(new GoogleAuthProvider());
     await signInWithPopup(auth,provider);
   }catch(e){
     console.error(e);
-    const errEl=document.getElementById("auth-err");
-    if(errEl){errEl.textContent="Error al iniciar con Google. Intentá de nuevo.";errEl.style.display="block";errEl.classList.add("show");}
+    const errEl=document.getElementById("auth-err"),cod=e&&e.code||'';
+    const msg=cod==='auth/unauthorized-domain'?'Este sitio todavía no está autorizado en Firebase (dominio). Avisale a RavenTechs.':(cod==='auth/popup-closed-by-user'||cod==='auth/cancelled-popup-request')?'Cerraste la ventana de Google. Tocá de nuevo para ingresar.':cod==='auth/popup-blocked'?'El navegador bloqueó la ventana de Google. Permitila y probá de nuevo.':'Error al iniciar con Google. Intentá de nuevo.'+(cod?' ('+cod+')':'');
+    if(errEl){errEl.textContent=msg;errEl.style.display="block";errEl.classList.add("show");}
   }
-  btn.disabled=false;
+  btn.disabled=false;btn.innerHTML=htmlOrig;
 });
 
 
