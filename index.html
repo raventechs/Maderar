@@ -685,7 +685,7 @@ var __rtPWA = (function() {
     <div class="field" id="field-negocio-nombre"><label>Nombre de tu negocio</label><input id="f-negocio-nombre" placeholder="Maderera Don José"/></div>
     <button class="btn-primary" id="btn-auth">Ingresar →</button>
     <div class="auth-toggle"><span id="toggle-mode">Registrarse</span></div>
-    <div id="app-ver" style="text-align:center;font-size:11px;color:#9a8a7a;margin-top:14px">MaderAR v0.3.0</div>
+    <div id="app-ver" style="text-align:center;font-size:11px;color:#9a8a7a;margin-top:14px">MaderAR v0.3.1</div>
   </div>
 </div>
 
@@ -1449,6 +1449,7 @@ onAuthStateChanged(auth,async user=>{
   if(activeInvite&&!user)return; // No pisar la pantalla de invitación
   document.getElementById('loading-screen').style.display='none';
   if(user){
+   try{
     me=user;socioOwner=null;
     try{   // ¿este correo está habilitado como dueño de un negocio? (lo habilita el administrador)
       const so=user.email?await getDoc(doc(db,'socios',user.email.toLowerCase())):null;
@@ -1490,6 +1491,15 @@ onAuthStateChanged(auth,async user=>{
         checkDemo();
       }
     }
+   }catch(err){   // ingresó con Google pero la base no lo dejó seguir (reglas sin publicar, base sin crear, sin conexión…)
+    console.error('login',err);
+    try{logError('login',(err&&err.code||'')+' '+(err&&err.message||''));}catch(_){}
+    const cod=err&&err.code||'',errEl=document.getElementById('auth-err');
+    const msg=cod==='permission-denied'?'Ingresaste bien, pero la base de datos no te dejó pasar (permisos). Revisá que las reglas de Firestore estén publicadas.':cod==='not-found'||cod==='failed-precondition'?'La base de datos de Firestore todavía no está creada en Firebase.':cod==='unavailable'?'No hay conexión con el servidor. Probá de nuevo.':'No se pudo abrir tu cuenta. ('+(cod||'error')+')';
+    showScreen('screen-login');
+    if(errEl){errEl.textContent=msg;errEl.style.display='block';errEl.classList.add('show');}
+    try{await signOut(auth);}catch(_){}
+   }
   } else {
     me=null;myDoc=null;myRole=null;
     if(unsubEmpVentas){unsubEmpVentas();unsubEmpVentas=null;}
