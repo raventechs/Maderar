@@ -627,6 +627,22 @@ var __rtPWA = (function() {
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar);else iniciar();
 })();
 </script>
+<style id="tour-css">
+#tour-card{position:fixed;z-index:1300;left:12px;right:12px;bottom:84px;background:#fff;color:#2b1d10;border:2px solid #8a5a2b;border-radius:16px;padding:14px 16px 12px;box-shadow:0 10px 34px rgba(0,0,0,.35);font-size:14px;line-height:1.45}
+@media(min-width:900px){#tour-card{left:auto;right:24px;bottom:24px;width:400px}}
+#tour-card .tour-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+#tour-card .tour-n{font-size:12px;color:#8a5a2b;font-weight:700}
+#tour-card .tour-x{background:none;border:0;font-size:20px;color:#6b4220;padding:2px 8px;cursor:pointer}
+#tour-card .tour-t{font-size:17px;font-weight:800;margin-bottom:6px;color:#4a2c12}
+#tour-card .tour-x2{margin-bottom:10px}
+#tour-card .tour-bar{height:5px;background:#eadfce;border-radius:3px;margin-bottom:10px;overflow:hidden}
+#tour-card .tour-bar>div{height:100%;background:#8a5a2b}
+#tour-card .tour-btns{display:flex;justify-content:space-between;gap:10px}
+#tour-card .tour-btns button{flex:1;padding:12px 10px;border-radius:12px;border:1.5px solid #8a5a2b;background:#fff;color:#6b4220;font-size:15px;font-weight:700;cursor:pointer}
+#tour-card .tour-btns .tour-go{background:linear-gradient(135deg,#6b4220,#8a5a2b);color:#fff}
+.tour-hl{outline:3px solid #e6b24a!important;outline-offset:-3px;border-radius:10px;animation:tourp 1.2s ease-in-out infinite}
+@keyframes tourp{50%{outline-color:rgba(230,178,74,.25)}}
+</style>
 </head>
 <body>
 <div id="offlineBanner" style="display:none;background:#7c3200;color:#ffd9b3;font-size:0.8rem;font-weight:600;text-align:center;padding:6px 12px;">Sin conexion - registros guardados localmente</div>
@@ -685,7 +701,7 @@ var __rtPWA = (function() {
     <div class="field" id="field-negocio-nombre"><label>Nombre de tu negocio</label><input id="f-negocio-nombre" placeholder="Maderera Don José"/></div>
     <button class="btn-primary" id="btn-auth">Ingresar →</button>
     <div class="auth-toggle"><span id="toggle-mode">Registrarse</span></div>
-    <div id="app-ver" style="text-align:center;font-size:11px;color:#9a8a7a;margin-top:14px">MaderAR v0.3.2</div>
+    <div id="app-ver" style="text-align:center;font-size:11px;color:#9a8a7a;margin-top:14px">MaderAR v0.4.0</div>
   </div>
 </div>
 
@@ -1763,6 +1779,7 @@ function renderPage(page){
   document.getElementById(`page-${page}`).style.display='block';
   setTopTitle(page);
   setTimeout(preguntarRubro,600);
+  try{if(sessionStorage.getItem('mr_tour')==='1'){sessionStorage.removeItem('mr_tour');setTimeout(()=>iniciarRecorrido(),900);}}catch(_){}
   document.getElementById('topbar-money-anim').style.display=page==='dashboard'?'block':'none';
   if(page==='dashboard')renderDashboard();
   else if(page==='vender')renderVender();
@@ -2459,6 +2476,137 @@ document.getElementById('btn-modal-cobrar-save').addEventListener('click',async(
   }
   btn.disabled=false;btn.textContent='Confirmar cobro';
 });
+
+// ══════════ CATÁLOGO DE MADERAS ARGENTINAS ══════════
+// Medidas comerciales habituales (pulgadas, largos 2,44 / 3,05 / 3,66 m). Los precios son SOLO de referencia (orden de magnitud 2026): se cargan solo si se pide.
+const MADERAS=(()=>{
+  const L=[],ct={};
+  const add=(cat,nombre,u,precio,pre,cod)=>{ct[cat]=(ct[cat]||0)+1;L.push({cat,nombre,u,precio,costo:Math.round(precio*0.7/10)*10,cod:cod||pre+String(ct[cat]).padStart(2,'0')});};
+  const T='Tirantes y listones',TB='Tablas de pino y eucalipto',NA='Maderas nativas',MA='Machimbres y revestimientos',DE='Decks',TA='Tableros y placas',PO='Postes y rollizos',ZO='Zócalos y molduras',PI='Pinturas y protección',FE='Ferretería';
+  // Tirantes y listones (metro lineal)
+  add(T,'Listón pino 1/2x1','m',700,'TIR');add(T,'Listón pino 1x2','m',1000,'TIR');add(T,'Tirante pino 2x2','m',1500,'TIR');add(T,'Tirante pino 2x3','m',2300,'TIR');
+  add(T,'Tirante pino 2x4','m',3100,'TIR');add(T,'Tirante pino 2x5','m',3900,'TIR');add(T,'Tirante pino 2x6','m',4700,'TIR');add(T,'Tirante pino 2x8','m',6300,'TIR');
+  add(T,'Tirante pino 3x3','m',2800,'TIR','TP33');add(T,'Tirante pino 3x4','m',4200,'TIR');add(T,'Tirante pino 3x6','m',6300,'TIR');
+  add(T,'Tirante eucalipto 2x3','m',2100,'TIR');add(T,'Tirante eucalipto 2x4','m',2900,'TIR');add(T,'Tirante eucalipto 2x6','m',4300,'TIR');
+  add(T,'Tirante eucalipto 3x3','m',3100,'TIR');add(T,'Tirante eucalipto 3x4','m',4100,'TIR');add(T,'Tirante eucalipto 3x6','m',6200,'TIR');add(T,'Tirante eucalipto 4x4','m',5300,'TIR');
+  add(T,'Puntal saligna 3x3','m',3000,'TIR');
+  // Tablas (metro lineal)
+  [['1x4',1300],['1x5',1600],['1x6',1900],['1x8',2500],['1x10',3100],['1x12',3700]].forEach(([m,p])=>add(TB,'Tabla pino '+m,'m',p,'TAB',m==='1x6'?'TB16':undefined));
+  [['1x4',1500],['1x5',1850],['1x6',2200],['1x8',2900],['1x10',3600],['1x12',4300]].forEach(([m,p])=>add(TB,'Tabla eucalipto '+m,'m',p,'TAB'));
+  add(TB,'Tabla pino 2x6 (tablón)','m',4500,'TAB');add(TB,'Tabla pino 2x10 (tablón)','m',7400,'TAB');add(TB,'Tabla eucalipto 2x8 (tablón)','m',5800,'TAB');
+  add(TB,'Tabla paraíso 1x6','m',2600,'TAB');add(TB,'Tabla kiri 1x6','m',3200,'TAB');add(TB,'Tabla pino Paraná 1x6','m',4000,'TAB');
+  // Nativas (metro lineal, tabla 1x6)
+  [['Lapacho',9500],['Urundel',8800],['Guayubira',7500],['Incienso',6800],['Cedro misionero',11000],['Guatambú',7000],['Loro negro',8500],['Loro blanco',6900],['Peteribí',6500]].forEach(([n,p])=>add(NA,n+' tabla 1x6','m',p,'NAT'));
+  add(NA,'Lapacho tirante 3x3','m',9800,'NAT');add(NA,'Incienso tirante 3x3','m',7200,'NAT');
+  // Machimbres (m²)
+  add(MA,'Machimbre pino 1/2x4','m2',7400,'MAC');add(MA,'Machimbre pino 1/2x5','m2',7100,'MAC');add(MA,'Machimbre pino 3/4x5','m2',9800,'MAC');add(MA,'Machimbre pino 1x6','m2',12000,'MAC');
+  add(MA,'Machimbre eucalipto','m2',14500,'MAC','MQ01');add(MA,'Machimbre pino símil tronco 1x5','m2',13500,'MAC');add(MA,'Revestimiento alistonado eucalipto','m2',18000,'MAC');add(MA,'Machimbre lapacho','m2',48000,'MAC');
+  // Decks (m²)
+  add(DE,'Deck eucalipto','m2',30000,'DEC');add(DE,'Deck pino tratado autoclave','m2',24000,'DEC');add(DE,'Deck lapacho','m2',70000,'DEC');
+  add(DE,'Baldosa deck eucalipto 50x50','u',16500,'DEC');add(DE,'Baldosa deck eucalipto 60x60','u',22000,'DEC');
+  // Tableros y placas (unidad)
+  add(TA,'Fenólico 18 mm','u',98000,'TBL','FN18');add(TA,'Multilaminado 15 mm 1,22x2,44','u',62000,'TBL');add(TA,'MDF 18 mm 1,83x2,60','u',88000,'TBL');add(TA,'MDF 9 mm 1,83x2,60','u',52000,'TBL');
+  add(TA,'Aglomerado melamínico blanco 18 mm','u',74000,'TBL');add(TA,'OSB 11 mm 1,22x2,44','u',41000,'TBL');add(TA,'Fibrofácil 3 mm 1,22x2,44','u',14500,'TBL');
+  add(TA,'Tablero finger pino 18 mm 1,22x2,44','u',95000,'TBL');add(TA,'Tablero finger eucalipto 20 mm 300x60','u',78000,'TBL');add(TA,'Tablero finger eucalipto 30 mm 150x120','u',96000,'TBL');add(TA,'Tablero finger eucalipto 40 mm 300x60','u',125000,'TBL');
+  add(TA,'Tablero listón corrido eucalipto 30 mm','u',150000,'TBL');add(TA,'Mesada eucalipto 150x60x2 cm','u',98000,'TBL');
+  // Postes y rollizos (unidad)
+  add(PO,'Rodrigón eucalipto impregnado 2,40 m','u',3800,'PST');add(PO,'Poste eucalipto 10-12 cm x 2,40 m','u',9500,'PST');add(PO,'Poste eucalipto 12-14 cm x 3,00 m','u',15500,'PST');
+  add(PO,'Poste eucalipto 14-16 cm x 4,00 m','u',28000,'PST');add(PO,'Poste eucalipto 12-14 cm x 7,50 m','u',85000,'PST');add(PO,'Poste quebracho 2,40 m','u',42000,'PST');
+  // Zócalos y molduras (metro lineal)
+  add(ZO,'Zócalo pino 3/4x3','m',1350,'ZOC');add(ZO,'Zócalo pino 3/4x4','m',1800,'ZOC');add(ZO,'Contramarco pino','m',3200,'ZOC');add(ZO,'Varilla pino 1/2x1/2','m',650,'ZOC');add(ZO,'Cuarto rodón pino','m',600,'ZOC');add(ZO,'Moldura finger pino','m',2200,'ZOC');
+  // Pinturas y protección (unidad)
+  add(PI,'Impregnante lasur para madera 4 L','u',42000,'PIN');add(PI,'Barniz marino 4 L','u',58000,'PIN');add(PI,'Barniz sintético brillante 1 L','u',18500,'PIN');add(PI,'Sellador para madera 4 L','u',36000,'PIN');
+  add(PI,'Pintura látex 4 L','u',38000,'PIN','PL04');add(PI,'Esmalte sintético 1 L','u',16000,'PIN');add(PI,'Aguarrás 1 L','u',5500,'PIN');add(PI,'Cera para madera 1 L','u',12000,'PIN');add(PI,'Masilla para madera 1 kg','u',7500,'PIN');
+  add(PI,'Pincel nº 20','u',3500,'PIN','PN20');add(PI,'Pincel nº 10','u',2000,'PIN');add(PI,'Rodillo de lana 22 cm','u',5500,'PIN');add(PI,'Lija para madera grano 120','u',900,'PIN');
+  // Ferretería
+  add(FE,'Clavos 2 pulgadas','kg',4200,'FER','CL02');add(FE,'Clavos 3 pulgadas','kg',4000,'FER');add(FE,'Tornillos 4x40 caja x100','paq',6800,'FER');add(FE,'Tornillos 4,5x60 caja x100','paq',9500,'FER');
+  add(FE,'Cola vinílica 1 kg','u',6200,'FER','CV01');add(FE,'Cola vinílica 250 g','u',2300,'FER');add(FE,'Tarugos 8 mm bolsa','paq',2800,'FER');add(FE,'Bisagra 3 pulgadas (par)','u',3500,'FER');
+  return L;
+})();
+const MADERAS_CATS=[...new Set(MADERAS.map(m=>m.cat))];
+function abrirCatalogo(neg){
+  const o=modalCompras('modal-catalogo',520),box=o.querySelector('.modal');
+  box.innerHTML=`<div class="modal-header"><span class="modal-title">📚 Catálogo de maderas argentinas</span><button class="modal-close" id="ct-x">✕</button></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Carga de una vez los productos típicos de una maderera (tirantes, tablas, machimbres, decks, tableros, postes, pinturas…) con sus medidas comerciales. Los que ya tengas <b>no se tocan ni se duplican</b>. Después ponés tus precios con <b>📥 Importar lista</b> o uno por uno.</p>
+    ${MADERAS_CATS.map(c=>`<label style="display:flex;gap:8px;align-items:center;font-size:14px;margin-bottom:6px;color:var(--text)"><input type="checkbox" class="ct-cat" value="${sanitizeHTML(c)}" checked style="width:auto"/> ${sanitizeHTML(c)} <span style="color:var(--muted);font-size:12px">(${MADERAS.filter(m=>m.cat===c).length})</span></label>`).join('')}
+    <hr style="border:0;border-top:1px solid var(--border);margin:10px 0"/>
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-bottom:6px;color:var(--text)"><input type="checkbox" id="ct-pre" style="width:auto"/> Con precios de referencia (solo para ver cómo funciona; después los cambiás)</label>
+    ${negocios.length>1?`<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin-bottom:6px;color:var(--text)"><input type="checkbox" id="ct-todos" checked style="width:auto"/> Cargarlo en todos los depósitos (${negocios.length})</label>`:''}
+    <div id="ct-info" style="font-size:13px;margin:8px 0"></div>
+    <div class="modal-footer"><button class="btn-cancel" id="ct-cancel">Cancelar</button><button class="btn-save" id="ct-ok">Cargar catálogo</button></div>`;
+  o.classList.add('open');
+  const cerrar=()=>o.classList.remove('open');
+  $id('ct-x').onclick=cerrar;$id('ct-cancel').onclick=cerrar;
+  $id('ct-ok').onclick=async()=>{
+    const cats=[...box.querySelectorAll('.ct-cat:checked')].map(x=>x.value);
+    if(!cats.length){toast('Elegí al menos un grupo','err');return;}
+    const conP=$id('ct-pre').checked,dest=($id('ct-todos')?.checked)?negocios:[neg],ahora=Date.now();
+    const btn=$id('ct-ok');btn.disabled=true;btn.textContent='Cargando…';
+    try{
+      let cre=0;const pares=[];
+      for(const n of dest){
+        const lista=prodsDe(n).map(p=>({...p})),cods=new Set(lista.map(p=>String(p.cod||'')).filter(Boolean)),noms=new Set(lista.map(p=>normTxt(p.nombre)));
+        MADERAS.filter(m=>cats.includes(m.cat)).forEach((m,j)=>{
+          if(cods.has(m.cod)||noms.has(normTxt(m.nombre)))return;
+          lista.push({id:prodId()+j.toString(36),nombre:m.nombre,cod:m.cod,u:m.u,precio:conP?m.precio:0,costo:conP?m.costo:0,cat:m.cat,sk:false,pAct:ahora});cre++;
+        });
+        pares.push([n,lista]);
+      }
+      await guardarListasDepositos(pares);
+      cerrar();
+      toast(cre?`✅ Se cargaron ${cre} productos${dest.length>1?' en cada depósito':''}`:'Ya tenías todo ese catálogo cargado',cre?'green':'');
+      renderProductos();
+    }catch(e){logError('abrirCatalogo',e.message);toast('Error: '+e.message,'err');btn.disabled=false;btn.textContent='Cargar catálogo';}
+  };
+}
+window.abrirCatalogo=abrirCatalogo;
+
+// ══════════ RECORRIDO GUIADO ══════════
+const TOUR=[
+  {p:'dashboard',i:'👋',t:'Bienvenido a MaderAR',x:'Este recorrido te muestra cada parte de la app en 2 minutos. Usá ▶ Siguiente para avanzar y ✕ para salir cuando quieras. Lo podés repetir desde Configuración.'},
+  {p:'dashboard',i:'📊',t:'Dashboard: el resumen del día',x:'Lo primero que ves al entrar: cuánto se vendió hoy, cuánto entró en efectivo, Mercado Pago, tarjeta o transferencia, y qué se gastó. Es como mirar la caja del día de un vistazo.'},
+  {p:'vender',i:'🧾',t:'Vender: cada venta del mostrador',x:'Acá se carga cada venta, como en el cuaderno pero más rápido. Buscá el producto, poné la cantidad y cómo pagó, y tocá Guardar. En madera podés cargar «tiras × largo» (ej. 4 tiras de 3 m) y la app calcula los metros. En la PC: F2 busca, Enter agrega, F4 importe y F8 guarda.'},
+  {p:'ventas',i:'🧮',t:'Caja: todo lo vendido',x:'Acá queda la lista de todas las ventas del día separadas por forma de pago. Podés mirar días anteriores, corregir o anular una venta cargada por error y hacer el cierre de caja.'},
+  {p:'productos',i:'📦',t:'Productos: precios y stock',x:'Tu lista de productos con precio, código, categoría y stock de cada depósito; avisa cuando queda poco. Con 📚 Catálogo de maderas cargás de una vez tirantes, tablas, machimbres y más. Con 📥 Importar lista pegás tu lista desde Excel, y con 📈 Aumento % subís todos los precios (o una categoría) y lo podés deshacer.'},
+  {p:'compras',i:'🚚',t:'Compras y traslados',x:'Cuando comprás mercadería a un proveedor, se carga acá y suma al stock. Si queda «A pagar», figura como deuda hasta que la pagás. También se hacen los traslados: mandás mercadería de una sucursal a otra (ej. de Misiones a Buenos Aires); resta en el origen al enviar y suma en destino cuando se marca «Recibido».'},
+  {p:'negocios',i:'🏭',t:'Sucursales',x:'Cada sucursal (la central, el local de Buenos Aires, la que abras después) tiene su propio stock, su caja y sus empleados. Acá ves el movimiento de cada una por separado.'},
+  {p:'empleados',i:'👥',t:'Empleados',x:'Cada empleado entra con su mail. Vos lo aprobás y solo ve y carga ventas de su sucursal; no ve los números del dueño.'},
+  {p:'gastos',i:'💸',t:'Gastos',x:'Todo lo que sale: flete, luz, alquiler, sueldos, impuestos. Se resta de lo vendido para que veas cuánto te queda de verdad en el mes.'},
+  {p:'fiado',i:'📒',t:'En cuenta',x:'Para los clientes que se llevan mercadería y pagan después (carpinteros, constructoras, obras). Queda anotado lo que debe cada uno y cuando paga lo cobrás desde acá.'},
+  {p:'clientes',i:'💳',t:'Clientes',x:'La ficha de cada cliente con teléfono, historial y saldo. Avisa cuáles se están atrasando en los pagos.'},
+  {p:'duenos',i:'👑',t:'Dueños: mirar el negocio en vivo',x:'Una solapa solo para los dueños, de solo lectura y en tiempo real: lo que se vende y se gasta en cada sucursal, lo que queda por pagar a proveedores y el stock que se está acabando. Se habilita con el mail de cada dueño.'},
+  {p:'config',i:'⚙️',t:'Configuración',x:'Acá cambiás el nombre de tu negocio (tocás el nombre, lo escribís y se guarda), el rubro, el plan y hacés copias de seguridad. También está el instructivo y el Modo Práctica con datos de ejemplo.'},
+  {p:'dashboard',i:'🎉',t:'¡Listo!',x:'Ya conocés todo. Para practicar sin miedo usá Configuración → 🎓 Modo Práctica: carga una maderera de ejemplo y se borra con un botón sin tocar tus datos reales.'}
+];
+let _tourI=-1,_tourL=[];
+function _tourVisible(p){return [...document.querySelectorAll(`[data-page="${p}"]`)].some(e=>e.style.display!=='none');}
+function iniciarRecorrido(){
+  _tourL=TOUR.filter(s=>s.p==='dashboard'||_tourVisible(s.p));
+  if(!_tourL.length)return;
+  _tourI=0;_tourPaint();
+}
+function cerrarRecorrido(){
+  _tourI=-1;$id('tour-card')?.remove();
+  document.querySelectorAll('.tour-hl').forEach(e=>e.classList.remove('tour-hl'));
+}
+function _tourPaint(){
+  const s=_tourL[_tourI];if(!s){cerrarRecorrido();return;}
+  if(currentPage!==s.p)renderPage(s.p);
+  document.querySelectorAll('.tour-hl').forEach(e=>e.classList.remove('tour-hl'));
+  if(_tourI>0&&_tourI<_tourL.length-1)document.querySelectorAll(`[data-page="${s.p}"]`).forEach(e=>e.classList.add('tour-hl'));
+  let c=$id('tour-card');
+  if(!c){c=document.createElement('div');c.id='tour-card';document.body.appendChild(c);}
+  const ult=_tourI===_tourL.length-1;
+  c.innerHTML=`<div class="tour-top"><span class="tour-n">${_tourI+1} de ${_tourL.length}</span><button class="tour-x" id="tour-x" aria-label="Salir">✕</button></div>
+    <div class="tour-t"><span>${s.i}</span> ${sanitizeHTML(s.t)}</div><div class="tour-x2">${sanitizeHTML(s.x)}</div>
+    <div class="tour-bar"><div style="width:${Math.round((_tourI+1)/_tourL.length*100)}%"></div></div>
+    <div class="tour-btns">${_tourI>0?'<button id="tour-prev">◀ Anterior</button>':'<span></span>'}<button id="tour-next" class="tour-go">${ult?'Terminar ✓':'Siguiente ▶'}</button></div>`;
+  $id('tour-x').onclick=cerrarRecorrido;
+  $id('tour-prev')?.addEventListener('click',()=>{_tourI--;_tourPaint();});
+  $id('tour-next').onclick=()=>{if(ult){cerrarRecorrido();}else{_tourI++;_tourPaint();}};
+}
+window.iniciarRecorrido=iniciarRecorrido;window.cerrarRecorrido=cerrarRecorrido;
+
 // ══════════ MODO PRÁCTICA ══════════
 // Todo lo que se crea acá lleva _demo:true y se puede quitar sin tocar datos reales.
 const _rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -2471,20 +2619,18 @@ async function _commitOps(ops){
 }
 async function cargarPractica(){
   if(!me||!negocios.length){toast('Primero creá tu negocio','err');return;}
-  if(!confirm('Se cargan productos, ventas, compras y gastos de mentira (de una maderera) para practicar. Podés quitarlos después sin tocar tus datos reales. ¿Seguir?'))return;
+  if(!confirm('Se carga una maderera de ejemplo: catálogo completo con precios de referencia y stock, ventas de la última semana, compras, gastos y clientes. Podés quitarlos después sin tocar tus datos reales. ¿Seguir?'))return;
   try{
     const ya=await getDocs(query(collection(db,'ventas'),where('ownerUid','==',me.uid),where('_demo','==',true)));
     if(!ya.empty){toast('Ya hay una práctica cargada. Quitala primero.','err');return;}
     toast('Cargando práctica…');
     const ops=[],hoyD=new Date(),ahora=Date.now(),desde=ahora-9*86400000;
-    const CAT=[ // nombre, código, unidad, precio, costo, categoría
-      ['Tirante pino 3x3','TP33','m',2800,1900,'Madera'],['Tabla pino 1x6','TB16','m',1900,1300,'Madera'],['Machimbre eucalipto','MQ01','m2',14500,10200,'Madera'],
-      ['Fenólico 18 mm','FN18','u',98000,72000,'Madera'],['Clavos 2 pulgadas','CL02','kg',4200,2900,'Ferretería'],['Pintura látex 4 L','PL04','u',38000,27000,'Pinturas'],
-      ['Pincel nº 20','PN20','u',3500,2100,'Pinturas'],['Cola vinílica 1 kg','CV01','u',6200,4300,'Ferretería']];
+    const VEND=['Tirante pino 3x3','Tabla pino 1x6','Machimbre eucalipto','Fenólico 18 mm','Clavos 2 pulgadas','Pintura látex 4 L','Pincel nº 20','Cola vinílica 1 kg','Tirante pino 2x4','Tirante pino 2x6','Tirante eucalipto 3x3','Tabla eucalipto 1x6','Machimbre pino 1/2x4','Deck eucalipto','Tablero finger eucalipto 20 mm 300x60','Barniz marino 4 L','Poste eucalipto 12-14 cm x 3,00 m','Zócalo pino 3/4x3','Tornillos 4,5x60 caja x100','Lapacho tabla 1x6'];
+    const CAT=VEND.map(nm=>MADERAS.find(m=>m.nombre===nm)).filter(Boolean).map(m=>[m.nombre,m.cod,m.u,m.precio,m.costo,m.cat]); // nombre, código, unidad, precio, costo, categoría
     const neg=negocios.slice(0,2),prods={};   // prods[negocioId][codigo]=producto
-    const nuevos={};
+    const nuevos={},BASE={m:300,m2:150,u:60,kg:40,paq:40};
     neg.forEach((n,i)=>{prods[n.id]={};nuevos[n.id]=prodsDe(n).map(p=>({...p}));
-      CAT.forEach(([nombre,cod,u,precio,costo,cat])=>{const p={id:prodId(),nombre,cod,u,precio,costo,cat,sk:true,base:i===0?400:80,desde,min:20,pAct:ahora,_demo:true};prods[n.id][cod]=p;nuevos[n.id].push(p);});});
+      MADERAS.forEach((m,j)=>{const base=Math.round((BASE[m.u]||60)*(i===0?1:0.2)),p={id:prodId()+j.toString(36),nombre:m.nombre,cod:m.cod,u:m.u,precio:m.precio,costo:m.costo,cat:m.cat,sk:true,base,desde,min:Math.max(2,Math.round(base*0.1)),pAct:ahora,_demo:true};prods[n.id][m.cod]=p;nuevos[n.id].push(p);});});
     const medios=['efectivo','efectivo','efectivo','mp','mp','debito','transferencia'];
     const vend=['Valentina','Diego'];
     for(let d=0;d<7;d++){
@@ -2492,7 +2638,7 @@ async function cargarPractica(){
       const cant=_rnd(6,12);
       for(let k=0;k<cant;k++){
         const n=neg.length>1&&_rnd(1,10)>6?neg[1]:neg[0],c=CAT[_rnd(0,CAT.length-1)],p=prods[n.id][c[1]];
-        let q=c[2]==='u'?_rnd(1,3):(c[2]==='kg'?_rnd(1,5):_rnd(3,24)),det;
+        let q=c[2]==='u'?_rnd(1,3):(c[2]==='kg'?_rnd(1,5):(c[2]==='paq'?_rnd(1,4):_rnd(3,24))),det;
         if(c[2]==='m'&&_rnd(1,2)===1){const t=_rnd(2,6),l=_rnd(2,4);q=t*l;det=t+' tiras '+l+' mts';}
         const imp=Math.round(c[3]*q*100)/100,hh=String(_rnd(8,19)).padStart(2,'0')+':'+String(_rnd(0,59)).padStart(2,'0');
         ops.push([doc(collection(db,'ventas')),{negocioId:n.id,ownerUid:me.uid,empleadoUid:me.uid,empleadoNombre:vend[_rnd(0,1)],importe:imp,medio:medios[_rnd(0,medios.length-1)],descripcion:c[0]+' x'+q,items:[{id:p.id,n:c[0],c:q,p:c[3],u:c[2],...(det?{det}:{})}],fecha:fechaStr,hora:hh,createdAt:Timestamp.fromDate(new Date(dia.getFullYear(),dia.getMonth(),dia.getDate(),+hh.slice(0,2),+hh.slice(3))),_demo:true}]);
@@ -2527,6 +2673,7 @@ async function cargarPractica(){
     for(const n of neg){await updateDoc(doc(db,'negocios',n.id),{productos:JSON.parse(JSON.stringify(nuevos[n.id]))});n.productos=nuevos[n.id];}
     _histCache={t:0,list:null};_comprasCache={t:0,list:null};_trasCache={t:0,list:null};
     toast('✅ Práctica cargada. Mirá Vender, Productos y Dueños.');
+    if(!window.__MR_TEST){try{sessionStorage.setItem('mr_tour','1');}catch(_){}}
     setTimeout(()=>{if(window.__MR_TEST){loadOwnerData().then(()=>renderPage(currentPage));}else location.reload();},1200);
   }catch(e){logError('cargarPractica',e.message);toast('Error: '+e.message,'err');}
 }
@@ -2616,8 +2763,13 @@ function renderConfig(){
     </div>
 <div class="card"><h3 class="card-title" style="font-size:1rem;margin:0 0 6px">❓ Instructivo</h3><p style="font-size:13px;opacity:.8;margin-bottom:10px">Guía paso a paso de cómo usar la app, con preguntas frecuentes.</p><a href="ayuda/" target="_blank" rel="noopener" style="display:inline-block;padding:10px 16px;border-radius:10px;background:#25D366;color:#fff;font-weight:700;text-decoration:none">📖 Abrir instructivo</a></div>
     <div class="card" style="margin-top:14px;">
+      <div class="card-title" style="font-weight:700;margin-bottom:6px;">🧭 Recorrido guiado</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Te lleva por cada sección de la app con una explicación simple de para qué sirve.</p>
+      <button class="btn-sm gold" onclick="iniciarRecorrido()" style="justify-content:center;">▶ Empezar el recorrido</button>
+    </div>
+<div class="card" style="margin-top:14px;">
       <div class="card-title" style="font-weight:700;margin-bottom:6px;">🎓 Modo Práctica</div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Carga ventas de la última semana y gastos de ejemplo en tu negocio para aprender o mostrar la app. Todo queda marcado y se quita con un botón, sin tocar tus datos reales.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Carga una maderera de ejemplo (catálogo de maderas con precios de referencia, stock, ventas de la última semana, compras, gastos y clientes) para aprender o mostrar la app. Todo queda marcado y se quita con un botón, sin tocar tus datos reales.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn-sm gold" onclick="cargarPractica()" style="justify-content:center;">Cargar datos de práctica</button>
         <button class="btn-sm" onclick="quitarPractica()" style="justify-content:center;">Quitar datos de práctica</button>
@@ -3482,7 +3634,7 @@ async function renderProductos(){
     ${negocios.length>1?`<select class="vd-sel" id="pr-neg" style="margin-bottom:10px">${negocios.map(n=>`<option value="${n.id}"${n.id===neg.id?' selected':''}>${sanitizeHTML(n.nombre)}</option>`).join('')}</select>`:''}
     <div id="pr-alerta"></div>
     <div class="sec-header" style="gap:8px"><input class="vd-sel" id="pr-buscar" placeholder="Buscar producto…" style="margin:0;flex:1"/><button class="btn-sm gold" id="pr-nuevo">＋ Producto</button></div>
-    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn-sm" id="pr-imp">📥 Importar lista</button><button class="btn-sm" id="pr-aum">📈 Aumento %</button></div>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn-sm" id="pr-cat">📚 Catálogo de maderas</button><button class="btn-sm" id="pr-imp">📥 Importar lista</button><button class="btn-sm" id="pr-aum">📈 Aumento %</button></div>
     <div id="pr-lista" style="margin-top:12px"></div>`;
   const pintar=()=>{
     const q=($id('pr-buscar').value||'').toLowerCase().trim();
@@ -3496,6 +3648,7 @@ async function renderProductos(){
   $id('pr-buscar').addEventListener('input',pintar);
   $id('pr-nuevo').addEventListener('click',()=>abrirProducto(neg,null,stock));
   $id('pr-imp').addEventListener('click',()=>abrirImportar(neg));
+  $id('pr-cat').addEventListener('click',()=>abrirCatalogo(neg));
   $id('pr-aum').addEventListener('click',()=>abrirAumento(neg));
   $id('pr-neg')?.addEventListener('change',e=>{prodNegId=e.target.value;renderProductos();});
   pintar();pintarAlertaStock('pr-alerta');
