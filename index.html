@@ -2459,53 +2459,83 @@ async function _commitOps(ops){
 }
 async function cargarPractica(){
   if(!me||!negocios.length){toast('Primero creá tu negocio','err');return;}
-  if(!confirm('Se cargan ventas de 7 días y gastos de mentira en tu negocio. Podés quitarlos después. ¿Seguir?'))return;
+  if(!confirm('Se cargan productos, ventas, compras y gastos de mentira (de una maderera) para practicar. Podés quitarlos después sin tocar tus datos reales. ¿Seguir?'))return;
   try{
-    const neg=negocios[0];
     const ya=await getDocs(query(collection(db,'ventas'),where('ownerUid','==',me.uid),where('_demo','==',true)));
     if(!ya.empty){toast('Ya hay una práctica cargada. Quitala primero.','err');return;}
     toast('Cargando práctica…');
-    const ops=[],hoyD=new Date();
-    const items=[['Gaseosa 1.5L',2800],['Pan x kg',2200],['Fiambre 200g',4500],['Limpieza varios',6200],['Golosinas',1500],['Lácteos',3900],['Verdura',3100],['Cigarrillos',5200]];
-    const medios=['efectivo','efectivo','efectivo','mp','mp','debito','credito'];
+    const ops=[],hoyD=new Date(),ahora=Date.now(),desde=ahora-9*86400000;
+    const CAT=[ // nombre, código, unidad, precio, costo, categoría
+      ['Tirante pino 3x3','TP33','m',2800,1900,'Madera'],['Tabla pino 1x6','TB16','m',1900,1300,'Madera'],['Machimbre eucalipto','MQ01','m2',14500,10200,'Madera'],
+      ['Fenólico 18 mm','FN18','u',98000,72000,'Madera'],['Clavos 2 pulgadas','CL02','kg',4200,2900,'Ferretería'],['Pintura látex 4 L','PL04','u',38000,27000,'Pinturas'],
+      ['Pincel nº 20','PN20','u',3500,2100,'Pinturas'],['Cola vinílica 1 kg','CV01','u',6200,4300,'Ferretería']];
+    const neg=negocios.slice(0,2),prods={};   // prods[negocioId][codigo]=producto
+    const nuevos={};
+    neg.forEach((n,i)=>{prods[n.id]={};nuevos[n.id]=prodsDe(n).map(p=>({...p}));
+      CAT.forEach(([nombre,cod,u,precio,costo,cat])=>{const p={id:prodId(),nombre,cod,u,precio,costo,cat,sk:true,base:i===0?400:80,desde,min:20,pAct:ahora,_demo:true};prods[n.id][cod]=p;nuevos[n.id].push(p);});});
+    const medios=['efectivo','efectivo','efectivo','mp','mp','debito','transferencia'];
     const vend=['Valentina','Diego'];
     for(let d=0;d<7;d++){
-      const dia=new Date(hoyD);dia.setDate(hoyD.getDate()-d);
-      const fechaStr=fechaAR(dia);
-      const cant=_rnd(8,15);
+      const dia=new Date(hoyD);dia.setDate(hoyD.getDate()-d);const fechaStr=fechaAR(dia);
+      const cant=_rnd(6,12);
       for(let k=0;k<cant;k++){
-        const it=items[_rnd(0,items.length-1)],n=_rnd(1,3);
-        const hh=String(_rnd(9,20)).padStart(2,'0')+':'+String(_rnd(0,59)).padStart(2,'0');
-        ops.push([doc(collection(db,'ventas')),{negocioId:neg.id,ownerUid:me.uid,empleadoUid:me.uid,empleadoNombre:vend[_rnd(0,1)],importe:it[1]*n,medio:medios[_rnd(0,medios.length-1)],descripcion:it[0]+(n>1?' x'+n:''),fecha:fechaStr,hora:hh,createdAt:Timestamp.fromDate(new Date(dia.getFullYear(),dia.getMonth(),dia.getDate(),+hh.slice(0,2),+hh.slice(3))),_demo:true}]);
+        const n=neg.length>1&&_rnd(1,10)>6?neg[1]:neg[0],c=CAT[_rnd(0,CAT.length-1)],p=prods[n.id][c[1]];
+        let q=c[2]==='u'?_rnd(1,3):(c[2]==='kg'?_rnd(1,5):_rnd(3,24)),det;
+        if(c[2]==='m'&&_rnd(1,2)===1){const t=_rnd(2,6),l=_rnd(2,4);q=t*l;det=t+' tiras '+l+' mts';}
+        const imp=Math.round(c[3]*q*100)/100,hh=String(_rnd(8,19)).padStart(2,'0')+':'+String(_rnd(0,59)).padStart(2,'0');
+        ops.push([doc(collection(db,'ventas')),{negocioId:n.id,ownerUid:me.uid,empleadoUid:me.uid,empleadoNombre:vend[_rnd(0,1)],importe:imp,medio:medios[_rnd(0,medios.length-1)],descripcion:c[0]+' x'+q,items:[{id:p.id,n:c[0],c:q,p:c[3],u:c[2],...(det?{det}:{})}],fecha:fechaStr,hora:hh,createdAt:Timestamp.fromDate(new Date(dia.getFullYear(),dia.getMonth(),dia.getDate(),+hh.slice(0,2),+hh.slice(3))),_demo:true}]);
       }
     }
-    [['Alquiler del local',320000,1],['Luz',48000,3],['Reposición de mercadería',210000,4],['Sueldo empleado',180000,6]].forEach(([descripcion,importe,dAtras])=>{
+    [['Flete de mercadería',85000,1],['Luz',48000,3],['Alquiler del local',320000,4],['Sueldo empleado',180000,6]].forEach(([descripcion,importe,dAtras])=>{
       const f=new Date(hoyD);f.setDate(hoyD.getDate()-dAtras);
-      ops.push([doc(collection(db,'gastos')),{negocioId:neg.id,ownerUid:me.uid,descripcion,importe,fecha:fechaAR(f),hora:'10:00',createdAt:Timestamp.fromDate(f),_demo:true}]);
+      ops.push([doc(collection(db,'gastos')),{negocioId:neg[0].id,ownerUid:me.uid,descripcion,importe,fecha:fechaAR(f),hora:'10:00',createdAt:Timestamp.fromDate(f),_demo:true}]);
     });
-    [['Doña Marta','1155550001',3],['Don Raúl','1155550002',2],['Lucía (vecina)','1155550003',1]].forEach(([nombre,telefono,n])=>{
+    [['Carpintería Gómez','1155550001',3],['Constructora Pérez','1155550002',2],['Don Raúl (obra)','1155550003',1]].forEach(([nombre,telefono,n])=>{
       const cref=doc(collection(db,'clientes'));let saldo=0;
-      for(let k=0;k<n;k++){const imp=_rnd(2,8)*1000;saldo+=imp;ops.push([doc(collection(db,'ventas')),{negocioId:neg.id,ownerUid:me.uid,empleadoUid:me.uid,empleadoNombre:'Valentina',importe:imp,medio:'fiado',pagos:[{medio:'fiado',importe:imp}],descripcion:'Compra en cuenta',fecha:fechaAR(hoyD),hora:'11:00',createdAt:Timestamp.fromDate(hoyD),clienteId:cref.id,clienteNombre:nombre,_demo:true}]);}
-      ops.push([cref,{tipo:'cc',ownerUid:me.uid,negocioId:neg.id,nombre,telefono,nota:'Cliente de práctica',saldo,ultimoMov:fechaAR(hoyD),createdAt:Timestamp.fromDate(hoyD),_demo:true}]);
+      for(let k=0;k<n;k++){const imp=_rnd(10,60)*1000;saldo+=imp;ops.push([doc(collection(db,'ventas')),{negocioId:neg[0].id,ownerUid:me.uid,empleadoUid:me.uid,empleadoNombre:'Valentina',importe:imp,medio:'fiado',pagos:[{medio:'fiado',importe:imp}],descripcion:'Compra en cuenta',fecha:fechaAR(hoyD),hora:'11:00',createdAt:Timestamp.fromDate(hoyD),clienteId:cref.id,clienteNombre:nombre,_demo:true}]);}
+      ops.push([cref,{tipo:'cc',ownerUid:me.uid,negocioId:neg[0].id,nombre,telefono,nota:'Cliente de práctica',saldo,ultimoMov:fechaAR(hoyD),createdAt:Timestamp.fromDate(hoyD),_demo:true}]);
     });
+    // proveedores y compras (una pagada y una «A pagar»)
+    const pv1=doc(collection(db,'proveedores')),pv2=doc(collection(db,'proveedores'));
+    ops.push([pv1,{ownerUid:me.uid,nombre:'Pinturas del Sur',tel:'1155551001',createdAt:Timestamp.fromDate(hoyD),_demo:true}]);
+    ops.push([pv2,{ownerUid:me.uid,nombre:'Ferretería Industrial',tel:'1155551002',createdAt:Timestamp.fromDate(hoyD),_demo:true}]);
+    const compra=(pv,pnom,dAtras,cods,estado)=>{
+      const f=new Date(hoyD);f.setDate(hoyD.getDate()-dAtras);
+      const its=cods.map(([cod,q])=>{const c=CAT.find(x=>x[1]===cod),p=prods[neg[0].id][cod];return{id:p.id,n:c[0],u:c[2],c:q,costo:c[4]};});
+      ops.push([doc(collection(db,'compras')),{ownerUid:me.uid,negocioId:neg[0].id,proveedorId:pv.id,proveedorNombre:pnom,fecha:fechaAR(f),hora:'09:30',items:its,total:its.reduce((a,i)=>a+i.c*i.costo,0),medio:estado==='impaga'?'':'transferencia',estado,createdAt:Timestamp.fromDate(f),_demo:true}]);
+    };
+    compra(pv1,'Pinturas del Sur',5,[['PL04',12],['PN20',20]],'pagada');
+    compra(pv2,'Ferretería Industrial',2,[['CL02',30],['CV01',24]],'impaga');
+    // traslado en camino de Misiones a la otra sucursal (si hay dos depósitos)
+    if(neg.length>1){
+      const p0=prods[neg[0].id].TP33,p1=prods[neg[1].id].TP33,f=new Date(hoyD);f.setDate(hoyD.getDate()-1);
+      ops.push([doc(collection(db,'traslados')),{ownerUid:me.uid,origenId:neg[0].id,destinoId:neg[1].id,fecha:fechaAR(f),hora:'08:00',items:[{id:p0.id,idDest:p1.id,n:'Tirante pino 3x3',u:'m',c:60}],nota:'Camión del viernes',estado:'enviado',createdAt:Timestamp.fromDate(f),_demo:true}]);
+    }
     await _commitOps(ops);
-    toast('✅ Práctica cargada. Mirá Inicio y los reportes.');
-    setTimeout(()=>location.reload(),1200);
+    for(const n of neg){await updateDoc(doc(db,'negocios',n.id),{productos:JSON.parse(JSON.stringify(nuevos[n.id]))});n.productos=nuevos[n.id];}
+    _histCache={t:0,list:null};_comprasCache={t:0,list:null};_trasCache={t:0,list:null};
+    toast('✅ Práctica cargada. Mirá Vender, Productos y Dueños.');
+    setTimeout(()=>{if(window.__MR_TEST){loadOwnerData().then(()=>renderPage(currentPage));}else location.reload();},1200);
   }catch(e){logError('cargarPractica',e.message);toast('Error: '+e.message,'err');}
 }
 async function quitarPractica(){
   if(!me)return;
-  if(!confirm('Se quitan SOLO los datos de práctica (ventas, gastos y clientes de cuenta marcados). Tus datos reales no se tocan. ¿Seguir?'))return;
+  if(!confirm('Se quitan SOLO los datos de práctica (productos, ventas, compras, gastos y clientes de práctica). Tus datos reales no se tocan. ¿Seguir?'))return;
   try{
     toast('Quitando práctica…');
     const ops=[];
-    for(const c of ['ventas','gastos','clientes']){
+    for(const c of ['ventas','gastos','clientes','compras','proveedores','traslados']){
       const s=await getDocs(query(collection(db,c),where('ownerUid','==',me.uid),where('_demo','==',true)));
       s.forEach(d=>ops.push([d.ref,null]));
     }
     await _commitOps(ops);
+    for(const n of negocios){
+      const L=prodsDe(n);
+      if(L.some(p=>p._demo)){const sin=L.filter(p=>!p._demo);await updateDoc(doc(db,'negocios',n.id),{productos:JSON.parse(JSON.stringify(sin))});n.productos=sin;}
+    }
+    _histCache={t:0,list:null};_comprasCache={t:0,list:null};_trasCache={t:0,list:null};
     toast('✅ Datos de práctica quitados');
-    setTimeout(()=>location.reload(),1200);
+    setTimeout(()=>{if(window.__MR_TEST){loadOwnerData().then(()=>renderPage(currentPage));}else location.reload();},1200);
   }catch(e){logError('quitarPractica',e.message);toast('Error: '+e.message,'err');}
 }
 window.cargarPractica=cargarPractica;window.quitarPractica=quitarPractica;
