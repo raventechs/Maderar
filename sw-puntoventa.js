@@ -1,7 +1,7 @@
 // sw-puntoventa.js — Service Worker MaderAR v3.0
 // P3 ROBUSTEZ: Caja + Ventas offline
 
-const CACHE_NAME = 'maderar-v0.3.2';
+const CACHE_NAME = 'maderar-v0.3.3';
 // Rutas en la raíz del dominio (maderar.raventechsapp.com)
 const SHELL = ['/', '/index.html'];
 const EXTRA = [
