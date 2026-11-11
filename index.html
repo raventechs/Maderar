@@ -731,6 +731,7 @@ var __rtPWA = (function() {
     <div class="nav-item" data-page="gastos"><span class="nav-icon">🧮</span>Gastos</div>
     <div class="nav-item" data-page="productos"><span class="nav-icon">📦</span>Productos</div>
     <div class="nav-item" data-page="compras"><span class="nav-icon">🚚</span>Compras</div>
+    <div class="nav-item" data-page="duenos"><span class="nav-icon">👑</span>Dueños</div>
     <div class="nav-item" data-page="fiado"><span class="nav-icon">📒</span>En cuenta</div>
     <div class="nav-item" data-page="clientes"><span class="nav-icon">💳</span>Clientes<span class="nav-badge" id="sb-morosidad-badge">0</span></div>
     <div class="nav-item" data-page="config"><span class="nav-icon">⚙️</span>Configuración</div>
@@ -787,6 +788,7 @@ var __rtPWA = (function() {
     <div id="page-fiado" class="page" style="display:none"></div>
     <div id="page-productos" class="page" style="display:none"></div>
     <div id="page-compras" class="page" style="display:none"></div>
+    <div id="page-duenos" class="page" style="display:none"></div>
     <div id="page-dashboard" class="page"></div>
     <div id="page-negocios" class="page" style="display:none"></div>
     <div id="page-ventas" class="page" style="display:none">
@@ -806,6 +808,7 @@ var __rtPWA = (function() {
       <div class="mob-item" data-page="gastos"><span class="mob-icon">🧮</span>Gastos</div>
       <div class="mob-item" data-page="productos"><span class="mob-icon">📦</span>Productos</div>
       <div class="mob-item" data-page="compras"><span class="mob-icon">🚚</span>Compras</div>
+      <div class="mob-item" data-page="duenos"><span class="mob-icon">👑</span>Dueños</div>
       <div class="mob-item" data-page="fiado"><span class="mob-icon">📒</span>En cuenta</div>
       <div class="mob-item" data-page="clientes"><span class="mob-icon">💳</span>Clientes<span class="mob-badge" id="mob-morosidad-badge">0</span></div>
     </div>
@@ -1498,6 +1501,7 @@ function applyModoUI(){
   mostrar('vender',true);                                   // en Avanzada y cuentas anteriores se entra desde Ventas → Nueva venta
   mostrar('dashboard',true);
   mostrar('compras',true);
+  mostrar('duenos',true);
   mostrar('negocios',!basico&&tieneMultiNegocio());
   mostrar('empleados',!basico&&!esUnico);
   mostrar('clientes',!basico&&tieneMorosidad());
@@ -1672,7 +1676,7 @@ function updMorosidadBadge(){
   if(n>0){sb.textContent=n;sb.classList.add('show');mob.textContent=n;mob.classList.add('show');}
   else{sb.classList.remove('show');mob.classList.remove('show');}
 }
-const PAGE_TITLES={vender:'Vender',fiado:'En cuenta',productos:'Productos',compras:'Compras',dashboard:'Dashboard',negocios:'Mis negocios',ventas:'Caja',empleados:'Empleados',gastos:'Gastos',clientes:'Clientes',config:'Configuración'};
+const PAGE_TITLES={vender:'Vender',fiado:'En cuenta',productos:'Productos',compras:'Compras',duenos:'Dueños',dashboard:'Dashboard',negocios:'Mis negocios',ventas:'Caja',empleados:'Empleados',gastos:'Gastos',clientes:'Clientes',config:'Configuración'};
 
 // ── RUBROS: una sola app; el rubro cambia el ícono, el ejemplo y los atajos de venta (los datos y las reglas son los mismos)
 const RUBROS={
@@ -1721,6 +1725,7 @@ function renderPage(page){
     fechaVentasSeleccionada=null;
     loadOwnerData().then(()=>{}); // recarga en segundo plano, no bloquea la navegación
   }
+  if(page!=='duenos')duenosParar();
   currentPage=page;
   document.querySelectorAll('.nav-item[data-page],.mob-item[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
   document.querySelectorAll('.page[id^=page-]').forEach(p=>p.style.display='none');
@@ -1733,6 +1738,7 @@ function renderPage(page){
   else if(page==='fiado')renderFiado();
   else if(page==='productos')renderProductos();
   else if(page==='compras')renderCompras();
+  else if(page==='duenos')renderDuenos();
   else if(page==='negocios')renderNegocios();
   else if(page==='ventas')renderVentas();
   else if(page==='empleados')renderEmpleados();
@@ -2939,6 +2945,49 @@ async function renderCompras(){
   el.querySelectorAll('[data-tid]').forEach(r=>r.addEventListener('click',()=>verTraslado(T.find(t=>t.id===r.dataset.tid))));
   $id('cp-prov').addEventListener('click',abrirProveedores);
   el.querySelectorAll('[data-cid]').forEach(r=>r.addEventListener('click',()=>verCompra(L.find(c=>c.id===r.dataset.cid))));
+}
+// ── SOLAPA DUEÑOS — tablero en tiempo real por sucursal (MaderAR)
+let _dvUnsubs=[],dvV=[],dvG=[],dvC=[],dvTimer=null;
+function duenosParar(){_dvUnsubs.forEach(u=>{try{u()}catch(_){}});_dvUnsubs=[];clearTimeout(dvTimer);}
+function renderDuenos(){
+  const el=$id('page-duenos');
+  if(!negocios.length){el.innerHTML=emptyHTML('🏪','Primero creá tu negocio');return;}
+  el.innerHTML=spinnerHTML();duenosParar();
+  let listos=0;const alListo=()=>{listos++;if(listos>=3)pintaDuenos();};
+  const escucha=(col,set)=>{
+    let primero=true;
+    _dvUnsubs.push(onSnapshot(query(collection(db,col),where('ownerUid','==',me.uid)),snap=>{
+      set(snap.docs.map(d=>({id:d.id,...d.data()})));
+      if(primero){primero=false;alListo();}else{clearTimeout(dvTimer);dvTimer=setTimeout(pintaDuenos,400);}
+    },err=>{logError('duenos-'+col,err.message);el.innerHTML=emptyHTML('⚠️','No se pudo cargar el tablero','Revisá tu conexión');}));
+  };
+  escucha('ventas',L=>{dvV=L;_histCache={t:Date.now(),list:L.slice().sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0))};});
+  escucha('gastos',L=>{dvG=L;});
+  escucha('compras',L=>{dvC=L;_comprasCache={t:Date.now(),list:L};});
+}
+async function pintaDuenos(){
+  const el=$id('page-duenos');if(!el||currentPage!=='duenos')return;
+  const h=hoy(),mes=h.slice(0,7),sumImp=(a,f)=>r2(a.reduce((x,i)=>x+(Number(i[f])||0),0));
+  const vHoy=dvV.filter(v=>v.fecha===h),gHoy=dvG.filter(g=>g.fecha===h),cHoy=dvC.filter(c=>c.fecha===h);
+  const vMes=dvV.filter(v=>String(v.fecha||'').startsWith(mes)),gMes=dvG.filter(g=>String(g.fecha||'').startsWith(mes)),cMes=dvC.filter(c=>String(c.fecha||'').startsWith(mes));
+  const porPagar=dvC.filter(c=>c.estado==='impaga');
+  let alertas=[];try{alertas=await alertasStock();}catch(e){}
+  const fila=(n,vv,gg,cc)=>{const v=sumCobrado(vv.filter(x=>x.negocioId===n.id)),g=sumImp(gg.filter(x=>x.negocioId===n.id),'importe'),c=sumImp(cc.filter(x=>x.negocioId===n.id),'total');return{v,g,c,r:r2(v-g-c)};};
+  const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px"><span style="font-size:12px;color:var(--muted)">🟢 En vivo · actualizado ${hora}</span></div>
+    <div class="vd-resumen">
+      <div class="vd-res"><b>${fmtARS(sumCobrado(vHoy))}</b><span>Vendido hoy</span></div>
+      <div class="vd-res"><b>${fmtARS(sumImp(gHoy,'importe'))}</b><span>Gastos hoy</span></div>
+      <div class="vd-res"><b>${fmtARS(sumImp(cHoy,'total'))}</b><span>Compras hoy</span></div>
+    </div>
+    <div class="sec-header"><span class="sec-title">Hoy por sucursal</span></div>
+    ${negocios.map(n=>{const x=fila(n,vHoy,gHoy,cHoy),cant=vHoy.filter(v=>v.negocioId===n.id).length;return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}<small>${cant} ventas · gastos ${fmtARS(x.g)} · compras ${fmtARS(x.c)}</small></div><div style="font-weight:800">${fmtARS(x.v)}</div></div>`;}).join('')}
+    <div class="sec-header" style="margin-top:16px"><span class="sec-title">Resultado del mes por sucursal</span></div>
+    ${negocios.map(n=>{const x=fila(n,vMes,gMes,cMes);return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}<small>ventas ${fmtARS(x.v)} − gastos ${fmtARS(x.g)} − compras ${fmtARS(x.c)}</small></div><div style="font-weight:800;color:${x.r<0?'var(--red)':'var(--green)'}">${fmtARS(x.r)}</div></div>`;}).join('')}
+    <div class="sec-header" style="margin-top:16px"><span class="sec-title">Cuentas a pagar a proveedores</span></div>
+    <div class="fd-row"><div class="nm">${porPagar.length} compra(s) sin pagar</div><div style="font-weight:800;color:${porPagar.length?'var(--warn)':'var(--muted)'}">${fmtARS(sumImp(porPagar,'total'))}</div></div>
+    ${stockCardHTML(alertas)}`;
+  el.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>renderPage(b.dataset.go)));
 }
 // ── TRASLADOS entre depósitos (Central Misiones → Buenos Aires) — MaderAR
 let _trasCache={t:0,list:null};
