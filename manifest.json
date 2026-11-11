@@ -1,10 +1,10 @@
 {
-  "name": "PuntoVenta",
-  "short_name": "PuntoVenta",
+  "name": "MaderAR",
+  "short_name": "MaderAR",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#F27B13",
+  "theme_color": "#5a3a1e",
   "lang": "es",
   "icons": [
     {

@@ -1,8 +1,8 @@
-// sw-puntoventa.js — Service Worker PuntoVenta v3.0
+// sw-puntoventa.js — Service Worker MaderAR v3.0
 // P3 ROBUSTEZ: Caja + Ventas offline
 
-const CACHE_NAME = 'puntoventa-v3.10';
-// Rutas en la raíz del dominio (puntoventa.raventechsapp.com)
+const CACHE_NAME = 'maderar-v0.1.0';
+// Rutas en la raíz del dominio (maderar.raventechsapp.com)
 const SHELL = ['/', '/index.html'];
 const EXTRA = [
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js',
