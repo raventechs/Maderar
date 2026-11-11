@@ -663,7 +663,7 @@ var __rtPWA = (function() {
     <div class="auth-sub">Tus ventas, tu caja y tus cuentas, ordenadas</div>
     <div class="role-selector" style="display:none">
       <div class="role-opt active" id="mode-single">
-        <div class="role-opt-icon">🏪</div>
+        <div class="role-opt-icon">🪵</div>
         <div class="role-opt-label">Negocio único</div>
         <div class="role-opt-sub">Mi propio local</div>
       </div>
@@ -690,7 +690,7 @@ var __rtPWA = (function() {
 <!-- INVITE -->
 <div id="screen-invite" class="screen">
   <div class="invite-card">
-    <div class="invite-card-icon" id="invite-neg-icon">🏪</div>
+    <div class="invite-card-icon" id="invite-neg-icon">🪵</div>
     <div class="invite-card-negocio" id="invite-neg-nombre">Cargando...</div>
     <div class="invite-card-sub" id="invite-neg-sub">Fuiste invitado a unirte como empleado</div>
     <div id="invite-expired-msg" style="display:none" class="invite-expired">⏰ Este link ya expiró. Pedile al dueño que genere uno nuevo.</div>
@@ -724,9 +724,9 @@ var __rtPWA = (function() {
       <div class="sb-brand-name">Mader<span>AR</span></div>
     </div>
     <div class="sb-section">Principal</div>
-    <div class="nav-item" data-page="vender"><span class="nav-icon">🛒</span>Vender</div>
+    <div class="nav-item" data-page="vender"><span class="nav-icon">🧾</span>Vender</div>
     <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</div>
-    <div class="nav-item" data-page="negocios"><span class="nav-icon">🏪</span>Mis negocios</div>
+    <div class="nav-item" data-page="negocios"><span class="nav-icon">🏭</span>Sucursales</div>
     <div class="nav-item" data-page="ventas"><span class="nav-icon">🧾</span>Caja</div>
     <div class="nav-item" data-page="empleados"><span class="nav-icon">👥</span>Empleados<span class="nav-badge" id="sb-pend-badge">0</span></div>
     <div class="nav-item" data-page="gastos"><span class="nav-icon">🧮</span>Gastos</div>
@@ -740,8 +740,8 @@ var __rtPWA = (function() {
       <div id="superuser-mode-switch" style="display:none;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.06);border-radius:8px;border:1px dashed rgba(255,255,255,.2)">
         <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🔧 Modo testing</div>
         <select id="superuser-modo-select" style="width:100%;font-size:12px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.2);color:#fff">
-          <option value="single">🏪 Negocio único</option>
-          <option value="multi">🏢 Varias sucursales</option>
+          <option value="single">🪵 Negocio único</option>
+          <option value="multi">🏭 Varias sucursales</option>
         </select>
       </div>
       <div class="sb-user">
@@ -775,8 +775,8 @@ var __rtPWA = (function() {
           <div id="superuser-mode-switch-mob" style="display:none;margin-bottom:8px;padding:8px;background:var(--surface2);border-radius:8px;border:1px dashed var(--border)">
             <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🔧 Modo testing</div>
             <select id="superuser-modo-select-mob" style="width:100%;font-size:12px;padding:6px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text)">
-              <option value="single">🏪 Negocio único</option>
-              <option value="multi">🏢 Varias sucursales</option>
+              <option value="single">🪵 Negocio único</option>
+              <option value="multi">🏭 Varias sucursales</option>
             </select>
           </div>
           <button id="btn-config-owner-mob" style="width:100%;text-align:left;background:none;border:none;padding:9px 8px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px">⚙️ Configuración</button>
@@ -801,9 +801,9 @@ var __rtPWA = (function() {
   </div>
   <div class="mob-nav">
     <div class="mob-nav-items">
-      <div class="mob-item" data-page="vender"><span class="mob-icon">🛒</span>Vender</div>
+      <div class="mob-item" data-page="vender"><span class="mob-icon">🧾</span>Vender</div>
       <div class="mob-item active" data-page="dashboard"><span class="mob-icon">📊</span>Dashboard</div>
-      <div class="mob-item" data-page="negocios"><span class="mob-icon">🏪</span>Negocios</div>
+      <div class="mob-item" data-page="negocios"><span class="mob-icon">🏭</span>Sucursales</div>
       <div class="mob-item" data-page="ventas"><span class="mob-icon">🧾</span>Caja</div>
       <div class="mob-item" data-page="empleados"><span class="mob-icon">👥</span>Empleados<span class="mob-badge" id="mob-pend-badge">0</span></div>
       <div class="mob-item" data-page="gastos"><span class="mob-icon">🧮</span>Gastos</div>
@@ -860,7 +860,7 @@ var __rtPWA = (function() {
     </div>
   </div>
   <div class="admin-tabs">
-    <div class="admin-tab active" id="atab-negocios">🏪 Negocios</div>
+    <div class="admin-tab active" id="atab-negocios">🪵 Negocios</div>
     <div class="admin-tab" id="atab-users">👥 Usuarios</div>
   </div>
   <div class="admin-body">
@@ -941,10 +941,10 @@ var __rtPWA = (function() {
 <div class="modal-overlay" id="modal-negocio">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">🏪 Nuevo negocio</span>
+      <span class="modal-title">🪵 Nuevo negocio</span>
       <button class="modal-close" id="btn-modal-neg-close">✕</button>
     </div>
-    <div class="field"><label>Nombre del negocio *</label><input id="neg-nombre" placeholder="Kiosco Don Luis"/></div>
+    <div class="field"><label>Nombre del negocio *</label><input id="neg-nombre" placeholder="Maderera Central"/></div>
     <div class="field"><label>Tipo</label>
       <select id="neg-tipo"></select>
     </div>
@@ -1121,9 +1121,9 @@ if(_inviteCode){
       const inv=invSnap.data();
       const expirado=inv.expiry?.toMillis?.()<Date.now()||inv.usado===true;
       // Las reglas no dejan leer el negocio a quien todavía no es parte del equipo: datos genéricos
-      let neg={nombre:'Negocio',icon:'🏪',tipo:''};
+      let neg={nombre:'Negocio',icon:'🪵',tipo:''};
       try{const negSnap=await getDoc(doc(db,'negocios',inv.negocioId));if(negSnap.exists())neg=negSnap.data();}catch(e){}
-      document.getElementById('invite-neg-icon').textContent=neg.icon||'🏪';
+      document.getElementById('invite-neg-icon').textContent=neg.icon||'🪵';
       document.getElementById('invite-neg-nombre').textContent=neg.nombre;
       document.getElementById('invite-neg-sub').textContent=neg.tipo?`Negocio: ${neg.tipo}`:'Fuiste invitado a unirte como empleado';
       activeInvite={code:_inviteCode,negocioId:inv.negocioId,ownerUid:inv.ownerUid};
@@ -1243,8 +1243,8 @@ document.getElementById('pin-overlay').addEventListener('click',e=>{if(e.target.
 async function loadAdminNegocios(){
   const c=document.getElementById('admin-negocios-list');c.innerHTML=spinnerHTML();
   const snap=await getDocs(collection(db,'negocios'));
-  if(snap.empty){c.innerHTML=emptyHTML('🏪','Sin negocios');return;}
-  c.innerHTML=snap.docs.map(d=>{const n=d.data();return`<div class="admin-card"><div class="admin-card-title">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}</div><div class="admin-card-sub">${sanitizeHTML(n.tipo||'—')} · ${sanitizeHTML(n.ownerEmail||'—')}</div><div class="admin-card-actions"><button class="btn-adel" data-id="${d.id}">🗑️ Eliminar</button></div></div>`;}).join('');
+  if(snap.empty){c.innerHTML=emptyHTML('🪵','Sin negocios');return;}
+  c.innerHTML=snap.docs.map(d=>{const n=d.data();return`<div class="admin-card"><div class="admin-card-title">${sanitizeHTML(n.icon||'🪵')} ${sanitizeHTML(n.nombre)}</div><div class="admin-card-sub">${sanitizeHTML(n.tipo||'—')} · ${sanitizeHTML(n.ownerEmail||'—')}</div><div class="admin-card-actions"><button class="btn-adel" data-id="${d.id}">🗑️ Eliminar</button></div></div>`;}).join('');
 }
 async function loadAdminUsers(){
   const c=document.getElementById('admin-users-list');c.innerHTML=spinnerHTML();
@@ -1457,7 +1457,7 @@ onAuthStateChanged(auth,async user=>{
     if(!snap.exists()){
       await setDoc(userRef,{uid:user.uid,email:user.email,rol:'owner',modo:'single',plan:'basico',banned:false,status:'demo',demoStart:serverTimestamp(),demoHasta:Timestamp.fromDate(new Date(Date.now()+DEMO_MS)),createdAt:serverTimestamp()});
       const nombreNegPorDefecto=user.displayName?`Negocio de ${user.displayName}`:'Mi negocio';
-      await addDoc(collection(db,'negocios'),{nombre:nombreNegPorDefecto,tipo:'Negocio único',icon:'🏪',ownerUid:user.uid,ownerEmail:user.email,createdAt:serverTimestamp()});
+      await addDoc(collection(db,'negocios'),{nombre:nombreNegPorDefecto,tipo:'Negocio único',icon:'🪵',ownerUid:user.uid,ownerEmail:user.email,createdAt:serverTimestamp()});
       snap=await getDoc(userRef);
     }
     myDoc=snap.data();myRole=myDoc.rol;
@@ -1554,7 +1554,7 @@ async function cambiarModoSuperusuario(nuevoModo){
     modoNegocio=nuevoModo;
     myDoc.modo=nuevoModo;
     if(nuevoModo==='single'&&negocios.length===0){
-      await addDoc(collection(db,'negocios'),{nombre:'Mi negocio de prueba',tipo:'Negocio único',icon:'🏪',ownerUid:me.uid,ownerEmail:me.email,createdAt:serverTimestamp()});
+      await addDoc(collection(db,'negocios'),{nombre:'Mi negocio de prueba',tipo:'Negocio único',icon:'🪵',ownerUid:me.uid,ownerEmail:me.email,createdAt:serverTimestamp()});
       await loadOwnerData(fechaVentasSeleccionada);
     }
     applyModoUI();
@@ -1632,7 +1632,7 @@ document.getElementById('btn-auth').addEventListener('click',async()=>{
       });
       if(modoSelected==='single'){
         const nombreNeg=document.getElementById('f-negocio-nombre').value.trim();
-        await addDoc(collection(db,'negocios'),{nombre:nombreNeg,tipo:'Negocio único',icon:'🏪',ownerUid:cred.user.uid,ownerEmail:email,createdAt:serverTimestamp()});
+        await addDoc(collection(db,'negocios'),{nombre:nombreNeg,tipo:'Negocio único',icon:'🪵',ownerUid:cred.user.uid,ownerEmail:email,createdAt:serverTimestamp()});
       }
     } else {
       await signInWithEmailAndPassword(auth,email,pass);
@@ -1698,30 +1698,27 @@ function updMorosidadBadge(){
   if(n>0){sb.textContent=n;sb.classList.add('show');mob.textContent=n;mob.classList.add('show');}
   else{sb.classList.remove('show');mob.classList.remove('show');}
 }
-const PAGE_TITLES={vender:'Vender',fiado:'En cuenta',productos:'Productos',compras:'Compras',duenos:'Dueños',dashboard:'Dashboard',negocios:'Mis negocios',ventas:'Caja',empleados:'Empleados',gastos:'Gastos',clientes:'Clientes',config:'Configuración'};
+const PAGE_TITLES={vender:'Vender',fiado:'En cuenta',productos:'Productos',compras:'Compras',duenos:'Dueños',dashboard:'Dashboard',negocios:'Sucursales',ventas:'Caja',empleados:'Empleados',gastos:'Gastos',clientes:'Clientes',config:'Configuración'};
 
 // ── RUBROS: una sola app; el rubro cambia el ícono, el ejemplo y los atajos de venta (los datos y las reglas son los mismos)
 const RUBROS={
-  'Kiosco':{icon:'🏪',ej:'Gaseosa, cigarrillos…',items:['Gaseosa','Cigarrillos','Golosinas','Alfajor','Recarga']},
-  'Almacén':{icon:'🛒',ej:'Fideos, leche, pan…',items:['Almacén','Lácteos','Bebidas','Limpieza','Pan']},
-  'Fiambrería':{icon:'🧀',ej:'Jamón, queso 200g…',items:['Jamón','Queso','Salame','Fiambre 200g','Sándwich']},
-  'Verdulería':{icon:'🥦',ej:'Tomate, papa, banana…',items:['Verdura','Fruta','Papa','Tomate','Cajón']},
-  'Panadería':{icon:'🥖',ej:'Pan, facturas…',items:['Pan','Facturas','Medialunas','Tortas','Sándwich']},
-  'Bazar':{icon:'🏠',ej:'Vaso, plato, sartén…',items:['Vajilla','Cocina','Limpieza','Regalería','Plásticos']},
-  'Tienda de ropa':{icon:'👕',ej:'Remera, jean, campera…',items:['Remera','Jean','Camisa','Campera','Accesorio']},
-  'Ferretería':{icon:'🔧',ej:'Tornillos, pintura…',items:['Tornillos','Pintura','Herramienta','Eléctrico','Plomería']},
-  'Farmacia':{icon:'💊',ej:'Perfumería, medicamento…',items:['Perfumería','Medicamento','Higiene','Vitaminas','Pañales']},
+  'Sucursal / local':{icon:'🪵',ej:'Tirante, machimbre, tabla…',items:['Tirante','Tabla','Machimbre','Fenólico','Clavos']},
+  'Central / depósito':{icon:'🏭',ej:'Madera cortada, listones…',items:['Tirante','Tabla','Listón','Machimbre','Placa']},
+  'Aserradero / fábrica':{icon:'🪚',ej:'Cortes a medida…',items:['Tirante','Tabla','Listón','Machimbre','Deck']},
+  'Corralón':{icon:'🏗️',ej:'Cemento, hierro, madera…',items:['Cemento','Hierro','Madera','Ladrillo','Arena']},
+  'Pinturería':{icon:'🎨',ej:'Pintura, pincel, rodillo…',items:['Pintura','Pincel','Rodillo','Barniz','Solvente']},
+  'Ferretería':{icon:'🔧',ej:'Tornillos, herramientas…',items:['Tornillos','Clavos','Herramienta','Bisagra','Cola']},
   'Otro':{icon:'🏬',ej:'Lo que vendiste',items:[]}};
 const rubroDe=n=>RUBROS[(n&&n.tipo)||'']||null;
 const opcionesRubros=sel=>Object.keys(RUBROS).map(t=>`<option value="${t}"${sel===t?' selected':''}>${RUBROS[t].icon} ${t}</option>`).join('');
-document.getElementById('neg-tipo').innerHTML=opcionesRubros('Kiosco');
+document.getElementById('neg-tipo').innerHTML=opcionesRubros('Sucursal / local');
 function preguntarRubro(){
   const n=negocios[0];
   if(!n||negocios.length!==1||!esBasico()||!me||me.uid!==n.ownerUid||RUBROS[n.tipo])return;
   try{if(localStorage.getItem('pv_rubro_skip_'+me.uid))return;}catch(e){}
   if($id('modal-rubro'))return;
   const ov=document.createElement('div');ov.className='modal-overlay open';ov.id='modal-rubro';ov.style.zIndex=1200;
-  ov.innerHTML=`<div class="modal"><div class="modal-header"><span class="modal-title">¿Qué tipo de negocio tenés?</span></div>
+  ov.innerHTML=`<div class="modal"><div class="modal-header"><span class="modal-title">¿Qué tipo de local es?</span></div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Así la app te muestra ejemplos y atajos de tu rubro. Lo podés cambiar después en Configuración.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${Object.keys(RUBROS).map(t=>`<button class="btn-sm" data-rubro="${t}" style="justify-content:center;padding:12px">${RUBROS[t].icon} ${t}</button>`).join('')}</div>
     <button class="btn-cancel" id="rubro-luego" style="width:100%;margin-top:12px">Más tarde</button></div>`;
@@ -1803,7 +1800,7 @@ function renderDashboard(){
       ${(tieneMultiNegocio()||negocios.length>1)?`<div>
         <div class="sec-header"><span class="sec-title">Sucursales</span><button class="btn-sm" id="d-ver-neg">Ver todo →</button></div>
         <div style="display:flex;flex-direction:column;gap:10px">
-          ${negocios.length===0?emptyHTML('🏪','Sin negocios','Creá el primero desde Mis negocios'):negocios.map(n=>{const vn=vh.filter(v=>v.negocioId===n.id);const tn=sumCobrado(vn);return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);cursor:pointer" class="d-neg-card" data-id="${n.id}"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">${sanitizeHTML(n.icon||'🏪')}</span><div style="flex:1"><div style="font-size:12px;color:var(--muted)">${sanitizeHTML(n.tipo)}</div><div style="font-size:15px;font-weight:800;color:var(--text)">${sanitizeHTML(n.nombre)}</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:800;color:var(--text)">${fmtARS(tn)}</div><div style="font-size:11px;color:var(--muted)">${vn.length} ventas</div></div></div></div>`;}).join('')}
+          ${negocios.length===0?emptyHTML('🪵','Sin negocios','Creá el primero desde Mis negocios'):negocios.map(n=>{const vn=vh.filter(v=>v.negocioId===n.id);const tn=sumCobrado(vn);return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);cursor:pointer" class="d-neg-card" data-id="${n.id}"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">${sanitizeHTML(n.icon||'🪵')}</span><div style="flex:1"><div style="font-size:12px;color:var(--muted)">${sanitizeHTML(n.tipo)}</div><div style="font-size:15px;font-weight:800;color:var(--text)">${sanitizeHTML(n.nombre)}</div></div><div style="text-align:right"><div style="font-size:16px;font-weight:800;color:var(--text)">${fmtARS(tn)}</div><div style="font-size:11px;color:var(--muted)">${vn.length} ventas</div></div></div></div>`;}).join('')}
         </div>
       </div>`:''}
       <div>
@@ -1856,7 +1853,7 @@ function tortaHTML(list){
 function comparativaHTML(V,G,desde,hasta){
   const filas=negocios.map(n=>({n,t:statsRango(V,G,n.id,desde,hasta).total})).sort((a,b)=>b.t-a.t);
   const max=Math.max(...filas.map(f=>f.t),1);
-  return filas.map(f=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text);font-weight:700">${sanitizeHTML(f.n.icon||'🏪')} ${sanitizeHTML(f.n.nombre)}</span><b style="color:var(--text)">${fmtARS(f.t)}</b></div><div style="height:10px;background:var(--surface2);border-radius:6px;overflow:hidden"><div style="height:100%;width:${Math.round(f.t/max*100)}%;background:var(--blue);border-radius:6px"></div></div></div>`).join('');
+  return filas.map(f=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:var(--text);font-weight:700">${sanitizeHTML(f.n.icon||'🪵')} ${sanitizeHTML(f.n.nombre)}</span><b style="color:var(--text)">${fmtARS(f.t)}</b></div><div style="height:10px;background:var(--surface2);border-radius:6px;overflow:hidden"><div style="height:100%;width:${Math.round(f.t/max*100)}%;background:var(--blue);border-radius:6px"></div></div></div>`).join('');
 }
 function frasesDelDia(V,G){
   const h=hoy(),ay=sumarDias(h,-1),sp=sumarDias(h,-7);
@@ -1904,7 +1901,7 @@ async function pintarAnalisis(){
   g.innerHTML=`<div class="cierre-card" style="margin-bottom:16px"><div class="cierre-title" style="margin-bottom:6px">📊 Ventas de los últimos 7 días</div><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Total: ${fmtARS(s7.total)} · ${s7.cant} ventas</div>${barrasSVG(vals,dias.map(diaSem),6)}</div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px">
     <div class="cierre-card"><div class="cierre-title" style="margin-bottom:10px">💳 Cómo te pagan (7 días)</div>${tortaHTML(s7.vv)}</div>
-    ${negocios.length>1?`<div class="cierre-card"><div class="cierre-title" style="margin-bottom:10px">🏪 Comparativa entre sucursales (7 días)</div>${comparativaHTML(V,G,dias[0],h)}</div>`:''}
+    ${negocios.length>1?`<div class="cierre-card"><div class="cierre-title" style="margin-bottom:10px">🪵 Comparativa entre sucursales (7 días)</div>${comparativaHTML(V,G,dias[0],h)}</div>`:''}
   </div>`;
 }
 function ensureFicha(){
@@ -1924,7 +1921,7 @@ async function abrirFichaNegocio(id){
   const vals=dias.map(f=>statsRango(V,G,id,f,f).total);
   const mios=V.filter(v=>v.negocioId===id).slice(0,8);
   const tile=(t,s)=>`<div style="background:var(--surface2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--muted)">${t}</div><div style="font-size:17px;font-weight:800;color:var(--text)">${fmtARS(s.total)}</div><div style="font-size:11px;color:var(--muted)">${s.cant} ventas</div></div>`;
-  box.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:30px">${sanitizeHTML(n.icon||'🏪')}</span><div style="flex:1"><div style="font-size:12px;color:var(--muted)">${sanitizeHTML(n.tipo||'')}</div><div style="font-size:18px;font-weight:800;color:var(--text)">${sanitizeHTML(n.nombre)}</div></div><button class="btn-sm" id="ficha-cerrar">✕</button></div>
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span style="font-size:30px">${sanitizeHTML(n.icon||'🪵')}</span><div style="flex:1"><div style="font-size:12px;color:var(--muted)">${sanitizeHTML(n.tipo||'')}</div><div style="font-size:18px;font-weight:800;color:var(--text)">${sanitizeHTML(n.nombre)}</div></div><button class="btn-sm" id="ficha-cerrar">✕</button></div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">${tile('Hoy',sh)}${tile('7 días',s7)}${tile('Este mes',sm)}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px"><div style="background:var(--surface2);border-radius:12px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--muted)">🧮 Gastos del mes</div><div style="font-weight:800;color:var(--red)">${fmtARS(sm.gastos)}</div></div><div style="background:var(--surface2);border-radius:12px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--muted)">📒 En cuenta del mes</div><div style="font-weight:800;color:var(--warn)">${fmtARS(sm.cta)}</div></div></div>
     <div class="cierre-title" style="margin-bottom:6px">📊 Últimos 7 días</div>${barrasSVG(vals,dias.map(diaSem),6)}
@@ -1944,11 +1941,11 @@ function renderNegocios(){
   el.innerHTML=`
     <div class="sec-header"><span class="sec-title" style="font-size:17px">Mis negocios</span><button class="btn-sm gold" id="btn-add-neg">＋ Agregar negocio</button></div>
     <div class="negocios-grid">
-      ${negocios.length===0?emptyHTML('🏪','Sin negocios','Creá tu primer negocio'):negocios.map(n=>{
+      ${negocios.length===0?emptyHTML('🪵','Sin negocios','Creá tu primer negocio'):negocios.map(n=>{
         const vn=ventas.filter(v=>v.negocioId===n.id&&v.fecha===hoy());
         const tn=sumCobrado(vn);
         const emps=empleados.filter(e=>e.negocioId===n.id&&e.estado==='aprobado').length;
-        return`<div class="negocio-card"><div class="neg-header"><span class="neg-icon">${sanitizeHTML(n.icon||'🏪')}</span><div class="live-dot-wrap"><div class="live-dot"></div>En vivo</div></div><div class="neg-nombre">${sanitizeHTML(n.nombre)}</div><div class="neg-tipo">${sanitizeHTML(n.tipo)} · ${emps} empleado${emps!==1?'s':''}</div><div class="neg-stats"><div class="neg-stat"><div class="neg-stat-val">${fmtARS(tn)}</div><div class="neg-stat-lbl">Total hoy</div></div><div class="neg-stat"><div class="neg-stat-val">${vn.length}</div><div class="neg-stat-lbl">Ventas</div></div></div></div>`;
+        return`<div class="negocio-card"><div class="neg-header"><span class="neg-icon">${sanitizeHTML(n.icon||'🪵')}</span><div class="live-dot-wrap"><div class="live-dot"></div>En vivo</div></div><div class="neg-nombre">${sanitizeHTML(n.nombre)}</div><div class="neg-tipo">${sanitizeHTML(n.tipo)} · ${emps} empleado${emps!==1?'s':''}</div><div class="neg-stats"><div class="neg-stat"><div class="neg-stat-val">${fmtARS(tn)}</div><div class="neg-stat-lbl">Total hoy</div></div><div class="neg-stat"><div class="neg-stat-val">${vn.length}</div><div class="neg-stat-lbl">Ventas</div></div></div></div>`;
       }).join('')}
     </div>`;
   el.querySelector('#btn-add-neg')?.addEventListener('click',()=>document.getElementById('modal-negocio').classList.add('open'));
@@ -1968,7 +1965,7 @@ function resumenCajaHTML(fecha){
   return lista.map(n=>{
     const m=resumenDatos(n._todos?null:n,fecha);
     const fila=(l,v,st)=>`<div class="cierre-row"><span class="cierre-label">${l}</span><span class="cierre-val"${st?` style="color:${st}"`:''}>${fmtARS(v)}</span></div>`;
-    return `<div class="cierre-card" style="padding:16px;margin-bottom:14px"><div class="cierre-title" style="margin-bottom:8px">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}${n._todos&&negocios.length!==1?'':' — Resumen de caja'}</div>
+    return `<div class="cierre-card" style="padding:16px;margin-bottom:14px"><div class="cierre-title" style="margin-bottom:8px">${sanitizeHTML(n.icon||'🪵')} ${sanitizeHTML(n.nombre)}${n._todos&&negocios.length!==1?'':' — Resumen de caja'}</div>
       ${fila('💵 Efectivo',m.ef)}${fila('📱 Mercado Pago',m.mp,'var(--mp)')}${fila('💳 Débito',m.deb,'var(--blue)')}${fila('💰 Crédito',m.cred,'#a855f7')}${fila('🏦 Transferencia',m.tr,'#0891b2')}
       <div class="cierre-row cierre-total"><span class="cierre-label">Total cobrado</span><span class="cierre-val">${fmtARS(m.total)}</span></div>
       ${m.cta?fila('📒 En cuenta (no entró plata)',m.cta,'var(--warn)'):''}${m.gastos?fila('🧮 Gastos',m.gastos,'var(--red)'):''}
@@ -2068,7 +2065,7 @@ function renderEmpleados(){
 
   const inviteSections=negocios.map(n=>`
     <div class="invite-section">
-      <div class="invite-section-title">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}</div>
+      <div class="invite-section-title">${sanitizeHTML(n.icon||'🪵')} ${sanitizeHTML(n.nombre)}</div>
       <div class="invite-banner-box">
         <div class="invite-banner-icon">🔗</div>
         <div><div class="invite-banner-title">Invitar empleado</div><div class="invite-banner-sub">Generá un link válido por 24hs</div></div>
@@ -2946,7 +2943,7 @@ function compraHTML(c){
 }
 async function renderCompras(){
   const el=$id('page-compras');
-  if(!negocios.length){el.innerHTML=emptyHTML('🏪','Primero creá tu negocio');return;}
+  if(!negocios.length){el.innerHTML=emptyHTML('🪵','Primero creá tu negocio');return;}
   el.innerHTML=spinnerHTML();
   let L=[];
   let T=[];
@@ -2996,7 +2993,7 @@ let _dvUnsubs=[],dvV=[],dvG=[],dvC=[],dvTimer=null;
 function duenosParar(){_dvUnsubs.forEach(u=>{try{u()}catch(_){}});_dvUnsubs=[];clearTimeout(dvTimer);}
 function renderDuenos(){
   const el=$id('page-duenos');
-  if(!negocios.length){el.innerHTML=emptyHTML('🏪','Primero creá tu negocio');return;}
+  if(!negocios.length){el.innerHTML=emptyHTML('🪵','Primero creá tu negocio');return;}
   el.innerHTML=spinnerHTML();duenosParar();
   let listos=0;const alListo=()=>{listos++;if(listos>=3)pintaDuenos();};
   const escucha=(col,set)=>{
@@ -3026,9 +3023,9 @@ async function pintaDuenos(){
       <div class="vd-res"><b>${fmtARS(sumImp(cHoy,'total'))}</b><span>Compras hoy</span></div>
     </div>
     <div class="sec-header"><span class="sec-title">Hoy por sucursal</span></div>
-    ${negocios.map(n=>{const x=fila(n,vHoy,gHoy,cHoy),cant=vHoy.filter(v=>v.negocioId===n.id).length;return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}<small>${cant} ventas · gastos ${fmtARS(x.g)} · compras ${fmtARS(x.c)}</small></div><div style="font-weight:800">${fmtARS(x.v)}</div></div>`;}).join('')}
+    ${negocios.map(n=>{const x=fila(n,vHoy,gHoy,cHoy),cant=vHoy.filter(v=>v.negocioId===n.id).length;return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🪵')} ${sanitizeHTML(n.nombre)}<small>${cant} ventas · gastos ${fmtARS(x.g)} · compras ${fmtARS(x.c)}</small></div><div style="font-weight:800">${fmtARS(x.v)}</div></div>`;}).join('')}
     <div class="sec-header" style="margin-top:16px"><span class="sec-title">Resultado del mes por sucursal</span></div>
-    ${negocios.map(n=>{const x=fila(n,vMes,gMes,cMes);return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🏪')} ${sanitizeHTML(n.nombre)}<small>ventas ${fmtARS(x.v)} − gastos ${fmtARS(x.g)} − compras ${fmtARS(x.c)}</small></div><div style="font-weight:800;color:${x.r<0?'var(--red)':'var(--green)'}">${fmtARS(x.r)}</div></div>`;}).join('')}
+    ${negocios.map(n=>{const x=fila(n,vMes,gMes,cMes);return`<div class="fd-row"><div class="nm">${sanitizeHTML(n.icon||'🪵')} ${sanitizeHTML(n.nombre)}<small>ventas ${fmtARS(x.v)} − gastos ${fmtARS(x.g)} − compras ${fmtARS(x.c)}</small></div><div style="font-weight:800;color:${x.r<0?'var(--red)':'var(--green)'}">${fmtARS(x.r)}</div></div>`;}).join('')}
     <div class="sec-header" style="margin-top:16px"><span class="sec-title">Cuentas a pagar a proveedores</span></div>
     <div class="fd-row"><div class="nm">${porPagar.length} compra(s) sin pagar</div><div style="font-weight:800;color:${porPagar.length?'var(--warn)':'var(--muted)'}">${fmtARS(sumImp(porPagar,'total'))}</div></div>
     ${stockCardHTML(alertas)}`;
@@ -3433,7 +3430,7 @@ let prodNegId=null;
 async function renderProductos(){
   const el=$id('page-productos');
   if(!tienePlus('catalogo')){el.innerHTML=plusPromoHTML('catalogo');return;}
-  if(!negocios.length){el.innerHTML=emptyHTML('🏪','Primero creá tu negocio');return;}
+  if(!negocios.length){el.innerHTML=emptyHTML('🪵','Primero creá tu negocio');return;}
   const neg=negocios.find(n=>n.id===prodNegId)||negocios[0];prodNegId=neg.id;
   const stock=await mapaStock();
   el.innerHTML=`${plusEnPrueba('catalogo')?`<div style="margin-bottom:8px">${plusTagHTML('catalogo')}</div>`:''}
@@ -3604,13 +3601,13 @@ function vdSync(){
 }
 function renderVender(){
   const el=$id('page-vender');
-  if(!negocios.length){el.innerHTML=emptyHTML('🏪','Todavía no tenés un negocio','Creá el tuyo desde Configuración');return;}
+  if(!negocios.length){el.innerHTML=emptyHTML('🪵','Todavía no tenés un negocio','Creá el tuyo desde Configuración');return;}
   const vh=ventas.filter(v=>v.fecha===hoy());
   const deben=cuentas.reduce((a,c)=>a+(Number(c.saldo)||0),0);
   vdSel=null;vdSplit=false;vdCarrito=[];
   el.innerHTML=`
     ${pasosHTML()}
-    ${negocios.length>1?`<select class="vd-sel" id="vd-neg" style="margin-bottom:10px">${negocios.map(n=>`<option value="${n.id}"${n.id===negVender().id?' selected':''}>${n.icon||'🏪'} ${sanitizeHTML(n.nombre)}</option>`).join('')}</select>`:''}
+    ${negocios.length>1?`<select class="vd-sel" id="vd-neg" style="margin-bottom:10px">${negocios.map(n=>`<option value="${n.id}"${n.id===negVender().id?' selected':''}>${n.icon||'🪵'} ${sanitizeHTML(n.nombre)}</option>`).join('')}</select>`:''}
     <div class="pc-hint"><span><b>F2</b> Buscar producto</span><span><b>Enter</b> Agregar el primero</span><span><b>F4</b> Importe</span><span><b>F8</b> Registrar venta</span></div>
     <div class="vd-resumen">
       <div class="vd-res"><b>${fmtARS(sumCobrado(vh))}</b><span>Cobrado hoy</span></div>
