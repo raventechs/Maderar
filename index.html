@@ -334,6 +334,18 @@ input,select,button,textarea{font-family:var(--font)}
   .topbar{padding:14px 16px}
 }
 @media(min-width:769px){.mob-nav{display:none!important}}
+.pc-hint{display:none}
+@media(min-width:1100px){
+  #page-vender .emp-form-card{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);column-gap:24px;align-items:start}
+  #page-vender .emp-form-card>.emp-form-title{grid-column:1/-1}
+  #page-vender .emp-form-card>#vd-cat{grid-column:1;grid-row:2/9}
+  #page-vender .emp-form-card>:not(#vd-cat):not(.emp-form-title){grid-column:2}
+  #page-vender #vd-cat-chips{max-height:300px;overflow-y:auto;align-content:flex-start}
+  #page-vender #vd-cart>div{min-height:160px;font-size:15px}
+  #page-vender .importe-input{font-size:34px;text-align:right}
+  .pc-hint{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 10px}
+  .pc-hint b{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;color:var(--text)}
+}
 
 #demo-wall{position:fixed;inset:0;background:linear-gradient(145deg,var(--navy),#1a3060);display:none;align-items:center;justify-content:center;z-index:9990;padding:24px}
 #demo-wall.open{display:flex}
@@ -635,7 +647,7 @@ var __rtPWA = (function() {
         </svg>
       </span>
     </div>
-    <div style="font-size:22px;font-weight:800;color:#ffffff;margin-bottom:4px;letter-spacing:.3px">Punto<span style="color:#f0b84a;font-weight:900">Venta</span></div>
+    <div style="font-size:22px;font-weight:800;color:#ffffff;margin-bottom:4px;letter-spacing:.3px">Mader<span style="color:#f0b84a;font-weight:900">AR</span></div>
     <div style="font-size:13px;color:rgba(255,255,255,.75)">Cargando tu negocio...</div>
   </div>
 </div>
@@ -644,7 +656,7 @@ var __rtPWA = (function() {
   <div class="auth-card">
     <div class="brand-row">
       <div class="brand-icon" id="login-logo">🛒</div>
-      <div class="brand-name">Punto<span>Venta</span></div>
+      <div class="brand-name">Mader<span>AR</span></div>
     </div>
     <div class="auth-title" id="auth-title">Bienvenido</div>
     <div class="auth-sub">Tus ventas, tu caja y tus cuentas, ordenadas</div>
@@ -708,7 +720,7 @@ var __rtPWA = (function() {
   <nav class="sidebar">
     <div class="sb-brand">
       <div class="sb-brand-icon" id="sidebar-logo">🛒</div>
-      <div class="sb-brand-name">Punto<span>Venta</span></div>
+      <div class="sb-brand-name">Mader<span>AR</span></div>
     </div>
     <div class="sb-section">Principal</div>
     <div class="nav-item" data-page="vender"><span class="nav-icon">🛒</span>Vender</div>
@@ -803,7 +815,7 @@ var __rtPWA = (function() {
 <!-- EMPLOYEE -->
 <div id="screen-employee" class="screen">
   <div class="emp-header">
-    <div class="emp-header-brand" id="emp-logo">Punto<span>Venta</span></div>
+    <div class="emp-header-brand" id="emp-logo">Mader<span>AR</span></div>
     <div class="emp-header-right">
       <span class="emp-neg-tag" id="emp-neg-name">—</span>
       <button class="emp-icon-btn" id="btn-theme-emp">🌙</button>
@@ -1561,6 +1573,16 @@ document.getElementById('toggle-mode').addEventListener('click',()=>{
   document.getElementById('btn-auth').textContent=isRegister?'Crear cuenta →':'Ingresar →';
   document.getElementById('toggle-mode').textContent=isRegister?'Ya tengo cuenta':'Registrarse';
   document.getElementById('auth-title').textContent=isRegister?'Crear cuenta':'Bienvenido';
+});
+// Atajos de teclado en la pantalla de venta (PC)
+document.addEventListener('keydown',e=>{
+  const pg=$id('page-vender');if(!pg||pg.style.display==='none'||!pg.offsetParent)return;
+  if(document.querySelector('.modal-overlay.open'))return;
+  const k=e.key;
+  if(k==='F2'){e.preventDefault();$id('vd-cat-q')?.focus();$id('vd-cat-q')?.select();}
+  else if(k==='F4'){e.preventDefault();$id('vd-importe')?.focus();$id('vd-importe')?.select();}
+  else if(k==='F8'){e.preventDefault();$id('vd-guardar')?.click();}
+  else if(k==='Enter'&&e.target?.id==='vd-cat-q'){e.preventDefault();$id('vd-cat-chips')?.querySelector('[data-add]')?.click();const q=$id('vd-cat-q');if(q){q.value='';q.dispatchEvent(new Event('input'));q.focus();}}
 });
 document.getElementById('f-pass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-auth').click();});
 
@@ -2845,11 +2867,17 @@ async function mapaStock(){   // {productoId: stock} de todos los negocios (solo
   const vend={},comp={};
   V.forEach(v=>(v.items||[]).forEach(it=>{(vend[it.id]=vend[it.id]||[]).push([ventasMs(v),Number(it.c)||0]);}));
   C.forEach(c=>(c.items||[]).forEach(it=>{(comp[it.id]=comp[it.id]||[]).push([ventasMs(c),Number(it.c)||0]);}));
+  let T=[];try{T=await cargarTraslados();}catch(e){console.error('traslados para stock',e);}
+  const sale={},entra={};   // traslados: resta en origen al enviar, suma en destino al recibir
+  T.filter(t=>t.estado==='enviado'||t.estado==='recibido').forEach(t=>(t.items||[]).forEach(it=>{
+    (sale[it.id]=sale[it.id]||[]).push([ventasMs(t),Number(it.c)||0]);
+    if(t.estado==='recibido')(entra[it.idDest]=entra[it.idDest]||[]).push([Number(t.recibidoMs)||ventasMs(t),Number(it.c)||0]);
+  }));
   const suma=(L,d)=>(L||[]).filter(x=>x[0]>=d).reduce((a,x)=>a+x[1],0);
   negocios.forEach(n=>prodsDe(n).forEach(p=>{
     if(!p.sk)return;
     const d=p.desde||0;
-    out[p.id]=r2((Number(p.base)||0)+suma(comp[p.id],d)-suma(vend[p.id],d));
+    out[p.id]=r2((Number(p.base)||0)+suma(comp[p.id],d)+suma(entra[p.id],d)-suma(vend[p.id],d)-suma(sale[p.id],d));
   }));
   return out;
 }
@@ -2893,7 +2921,8 @@ async function renderCompras(){
   if(!negocios.length){el.innerHTML=emptyHTML('🏪','Primero creá tu negocio');return;}
   el.innerHTML=spinnerHTML();
   let L=[];
-  try{L=await cargarCompras(true);await cargarProveedores();}catch(e){logError('renderCompras',e.message);el.innerHTML=emptyHTML('⚠️','No se pudieron cargar las compras','Revisá tu conexión');return;}
+  let T=[];
+  try{L=await cargarCompras(true);await cargarProveedores();if(negocios.length>1)T=await cargarTraslados(true);}catch(e){logError('renderCompras',e.message);el.innerHTML=emptyHTML('⚠️','No se pudieron cargar las compras','Revisá tu conexión');return;}
   const mes=hoy().slice(0,7);
   const total=a=>fmtARS(r2(a.reduce((x,c)=>x+(Number(c.total)||0),0)));
   el.innerHTML=`<div class="vd-resumen">
@@ -2901,12 +2930,103 @@ async function renderCompras(){
       <div class="vd-res"><b>${total(L.filter(c=>c.estado==='impaga'))}</b><span>Por pagar</span></div>
       <div class="vd-res" id="cp-prov" style="cursor:pointer"><b>${proveedores.length}</b><span>Proveedores</span></div>
     </div>
-    <div class="sec-header" style="gap:8px"><button class="btn-sm gold" id="cp-nueva">＋ Nueva compra</button><button class="btn-sm" id="cp-provs">🏭 Proveedores</button></div>
+    <div class="sec-header" style="gap:8px"><button class="btn-sm gold" id="cp-nueva">＋ Nueva compra</button><button class="btn-sm" id="cp-provs">🏭 Proveedores</button>${negocios.length>1?'<button class="btn-sm" id="cp-tras">🔁 Enviar a otro depósito</button>':''}</div>
+    ${T.length?`<div class="sec-header" style="margin-top:14px"><span class="sec-title">Traslados entre depósitos</span></div><div id="tr-lista">${T.filter(t=>t.estado==='enviado').concat(T.filter(t=>t.estado!=='enviado').slice(0,10)).map(trasladoHTML).join('')}</div><div class="sec-header" style="margin-top:14px"><span class="sec-title">Compras</span></div>`:''}
     <div id="cp-lista" style="margin-top:12px">${L.slice(0,60).map(compraHTML).join('')||emptyHTML('🚚','Todavía no cargaste compras','Tocá ＋ Nueva compra')}</div>`;
   $id('cp-nueva').addEventListener('click',()=>abrirCompra());
   $id('cp-provs').addEventListener('click',abrirProveedores);
+  $id('cp-tras')?.addEventListener('click',abrirTraslado);
+  el.querySelectorAll('[data-tid]').forEach(r=>r.addEventListener('click',()=>verTraslado(T.find(t=>t.id===r.dataset.tid))));
   $id('cp-prov').addEventListener('click',abrirProveedores);
   el.querySelectorAll('[data-cid]').forEach(r=>r.addEventListener('click',()=>verCompra(L.find(c=>c.id===r.dataset.cid))));
+}
+// ── TRASLADOS entre depósitos (Central Misiones → Buenos Aires) — MaderAR
+let _trasCache={t:0,list:null};
+async function cargarTraslados(force){
+  if(!force&&_trasCache.list&&Date.now()-_trasCache.t<30000)return _trasCache.list;
+  const sn=await getDocs(query(collection(db,'traslados'),where('ownerUid','==',me.uid)));
+  const L=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+  _trasCache={t:Date.now(),list:L};return L;
+}
+const nombreNeg=id=>(negocios.find(n=>n.id===id)||{}).nombre||'Depósito';
+function trasladoHTML(t){
+  const pend=t.estado==='enviado';
+  return`<div class="fd-row" data-tid="${t.id}"><div class="nm">${sanitizeHTML(nombreNeg(t.origenId))} → ${sanitizeHTML(nombreNeg(t.destinoId))}<small>${fmtFechaDM(t.fecha)} · ${(t.items||[]).length} ${(t.items||[]).length===1?'renglón':'renglones'}</small></div><div style="font-weight:800;color:${pend?'var(--warn)':'var(--green)'}">${pend?'🚚 En camino':'✓ Recibido'}</div></div>`;
+}
+function verTraslado(t){
+  if(!t)return;
+  const o=modalCompras('modal-vertras'),box=o.querySelector('.modal'),pend=t.estado==='enviado';
+  box.innerHTML=`<div class="modal-header"><span class="modal-title">🔁 ${sanitizeHTML(nombreNeg(t.origenId))} → ${sanitizeHTML(nombreNeg(t.destinoId))}</span><button class="modal-close" id="vt-x">✕</button></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Enviado ${fmtFechaDM(t.fecha)} ${sanitizeHTML(t.hora||'')} · ${pend?'<b style="color:var(--warn)">En camino</b>':'<b style="color:var(--green)">Recibido</b>'}</div>
+    ${(t.items||[]).map(i=>`<div class="fd-mov"><div class="d">${sanitizeHTML(i.n)}</div><b>${fmtQ(i.c)} ${(UNIDADES[i.u]||UNIDADES.u).s}</b></div>`).join('')}
+    ${t.nota?`<div style="font-size:13px;margin-top:8px;color:var(--text)">📝 ${sanitizeHTML(t.nota)}</div>`:''}
+    <div class="modal-footer"><button class="btn-cancel" id="vt-anular" style="color:var(--red)">🗑 Anular</button>${pend?'<button class="btn-save" id="vt-recibir">✓ Marcar recibido</button>':'<button class="btn-save" id="vt-ok">Cerrar</button>'}</div>`;
+  o.classList.add('open');
+  $id('vt-x').addEventListener('click',()=>o.classList.remove('open'));
+  $id('vt-ok')?.addEventListener('click',()=>o.classList.remove('open'));
+  $id('vt-recibir')?.addEventListener('click',async()=>{
+    try{await updateDoc(doc(db,'traslados',t.id),{estado:'recibido',recibidoFecha:hoy(),recibidoMs:Date.now()});_trasCache={t:0,list:null};o.classList.remove('open');toast('Recibido: el stock ya está en el depósito de destino','green');renderCompras();}
+    catch(e){logError('recibirTraslado',e.message);toast('No se pudo marcar como recibido','err');}
+  });
+  $id('vt-anular').addEventListener('click',async()=>{
+    if(!confirm('¿Anular este traslado? El stock vuelve a quedar como antes.'))return;
+    try{await deleteDoc(doc(db,'traslados',t.id));_trasCache={t:0,list:null};o.classList.remove('open');toast('Traslado anulado');renderCompras();}
+    catch(e){logError('anularTraslado',e.message);toast('No se pudo anular','err');}
+  });
+}
+function abrirTraslado(){
+  let origen=(negocios.find(n=>n.id===comprasNegId)||negocios[0]).id,destino=(negocios.find(n=>n.id!==origen)||{}).id,items=[];
+  const o=modalCompras('modal-traslado',560),box=o.querySelector('.modal');
+  box.innerHTML=`<div class="modal-header"><span class="modal-title">🔁 Enviar a otro depósito</span><button class="modal-close" id="tr-x">✕</button></div>
+    <div class="field"><label>Sale de</label><select class="vd-sel" id="tr-o" style="margin:0">${negocios.map(n=>`<option value="${n.id}">${sanitizeHTML(n.nombre)}</option>`).join('')}</select></div>
+    <div class="field"><label>Va a</label><select class="vd-sel" id="tr-d" style="margin:0"></select></div>
+    <div class="field"><label>Agregar producto</label><input class="vd-sel" id="tr-q" placeholder="Buscar por nombre, código o categoría…" style="margin:0 0 6px"/><div class="depto-chips" id="tr-chips"></div></div>
+    <div id="tr-items"></div>
+    <div class="field"><label>Nota (opcional)</label><input class="vd-sel" id="tr-nota" placeholder="Ej: camión del viernes" style="margin:0"/></div>
+    <div class="modal-footer"><button class="btn-cancel" id="tr-cancel">Cancelar</button><button class="btn-save" id="tr-save">Enviar</button></div>`;
+  o.classList.add('open');
+  $id('tr-o').value=origen;
+  const pintaDest=()=>{const L=negocios.filter(n=>n.id!==origen);if(!L.some(n=>n.id===destino))destino=(L[0]||{}).id;$id('tr-d').innerHTML=L.map(n=>`<option value="${n.id}"${n.id===destino?' selected':''}>${sanitizeHTML(n.nombre)}</option>`).join('');};
+  const pintaItems=()=>{
+    $id('tr-items').innerHTML=items.map((x,i)=>`<div style="border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:6px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--text)"><b>${sanitizeHTML(x.n)}</b><button type="button" class="btn-sm" data-trx="${i}">✕</button></div><input class="vd-sel" data-trc="${i}" type="number" inputmode="decimal" step="any" placeholder="Cantidad (${(UNIDADES[x.u]||UNIDADES.u).s})" value="${x.c||''}" style="margin:6px 0 0"/></div>`).join('');
+    $id('tr-items').querySelectorAll('[data-trx]').forEach(b=>b.addEventListener('click',()=>{items.splice(+b.dataset.trx,1);pintaItems();}));
+    $id('tr-items').querySelectorAll('[data-trc]').forEach(i=>i.addEventListener('input',()=>{items[+i.dataset.trc].c=num(i.value)||0;}));
+  };
+  const pintaChips=()=>{
+    const q=($id('tr-q').value||'').toLowerCase().trim(),neg=negocios.find(n=>n.id===origen);
+    $id('tr-chips').innerHTML=prodsDe(neg).filter(p=>!q||[p.nombre,p.cod,p.cat].some(t=>String(t||'').toLowerCase().includes(q))).slice(0,12).map(p=>`<button type="button" class="depto-chip" data-padd="${p.id}">${sanitizeHTML(p.nombre)}</button>`).join('')||'<small style="color:var(--muted)">No hay productos en este depósito</small>';
+    $id('tr-chips').querySelectorAll('[data-padd]').forEach(b=>b.addEventListener('click',()=>{const p=prodsDe(neg).find(x=>x.id===b.dataset.padd);if(!items.some(x=>x.id===p.id))items.push({id:p.id,n:p.nombre,u:p.u||'u',c:0});pintaItems();}));
+  };
+  pintaDest();pintaChips();pintaItems();
+  $id('tr-x').addEventListener('click',()=>o.classList.remove('open'));
+  $id('tr-cancel').addEventListener('click',()=>o.classList.remove('open'));
+  $id('tr-q').addEventListener('input',pintaChips);
+  $id('tr-o').addEventListener('change',e=>{origen=e.target.value;items=[];pintaDest();pintaChips();pintaItems();});
+  $id('tr-d').addEventListener('change',e=>{destino=e.target.value;});
+  $id('tr-save').addEventListener('click',async()=>{
+    if(!destino||destino===origen){toast('Elegí un depósito de destino distinto','err');return;}
+    if(!items.length){toast('Agregá al menos un producto','err');return;}
+    if(items.some(x=>!(Number(x.c)>0))){toast('Poné la cantidad de cada producto','err');return;}
+    const nO=negocios.find(n=>n.id===origen),nD=negocios.find(n=>n.id===destino),ahora=Date.now();
+    const lista=prodsDe(nD).map(p=>({...p}));let cambio=false;
+    const itemsOut=items.map(x=>{   // busca el mismo producto en el destino (por código o nombre); si no está, lo crea sin stock
+      const po=prodsDe(nO).find(p=>p.id===x.id)||{};
+      let pd=lista.find(p=>po.cod&&p.cod&&String(p.cod)===String(po.cod))||lista.find(p=>normTxt(p.nombre)===normTxt(po.nombre));
+      if(!pd){pd={id:prodId(),nombre:po.nombre,precio:po.precio||0,u:po.u||'u',...(po.cod?{cod:po.cod}:{}),...(po.cat?{cat:po.cat}:{}),...(po.costo?{costo:po.costo}:{}),sk:true,base:0,desde:ahora,min:0,pAct:ahora};lista.push(pd);cambio=true;}
+      else if(!pd.sk){pd.sk=true;pd.base=0;pd.desde=ahora;pd.min=pd.min||0;cambio=true;}
+      return{id:x.id,idDest:pd.id,n:x.n,u:x.u,c:r2(x.c)};
+    });
+    const btn=$id('tr-save');btn.disabled=true;
+    try{
+      const batch=writeBatch(db);
+      batch.set(doc(collection(db,'traslados')),{ownerUid:me.uid,origenId:origen,destinoId:destino,fecha:hoy(),hora:fmtHora(),items:itemsOut,nota:$id('tr-nota').value.trim(),estado:'enviado',createdAt:serverTimestamp()});
+      if(cambio)batch.update(doc(db,'negocios',destino),{productos:JSON.parse(JSON.stringify(lista))});
+      await batch.commit();
+      if(cambio)nD.productos=lista;
+      _trasCache={t:0,list:null};_histCache={t:0,list:null};
+      o.classList.remove('open');toast('Enviado. Cuando llegue, marcalo como recibido','green');renderCompras();
+    }catch(e){logError('nuevoTraslado',e.message);toast('No se pudo enviar: '+(e.message||e.code||'error'),'err');btn.disabled=false;}
+  });
 }
 function modalCompras(id,ancho){
   let o=$id(id);
@@ -3397,6 +3517,7 @@ function renderVender(){
   el.innerHTML=`
     ${pasosHTML()}
     ${negocios.length>1?`<select class="vd-sel" id="vd-neg" style="margin-bottom:10px">${negocios.map(n=>`<option value="${n.id}"${n.id===negVender().id?' selected':''}>${n.icon||'🏪'} ${sanitizeHTML(n.nombre)}</option>`).join('')}</select>`:''}
+    <div class="pc-hint"><span><b>F2</b> Buscar producto</span><span><b>Enter</b> Agregar el primero</span><span><b>F4</b> Importe</span><span><b>F8</b> Registrar venta</span></div>
     <div class="vd-resumen">
       <div class="vd-res"><b>${fmtARS(sumCobrado(vh))}</b><span>Cobrado hoy</span></div>
       <div class="vd-res"><b>${fmtARS(sumMedio(vh,'fiado'))}</b><span>En cuenta hoy</span></div>
