@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MaderAR">
-<!-- MaderAR v0.1.0 — 2026-11-11 — BASE: copia de PuntoVenta v3.9 adaptada a madereras (venta por metros, compras y proveedores, importación de productos, aumentos por porcentaje). PENDIENTE: Firebase propio, reglas, íconos finales, instructivo. Historial heredado de PuntoVenta: v3.9 — 2026-11-09 — PLUS: Catálogo con stock y alertas (productos dentro del negocio, venta tocando productos, aviso de faltantes) y Tablero del dueño; ambos se activan con botones en el menú admin; cuentas anteriores y pruebas de 14 días los ven. v3.0 — 2026-11-08 — PLAN BÁSICO/AVANZADA: cuentas nuevas arrancan en Básica (Vender, Ventas, En cuenta, Gastos, Caja); Avanzada se activa desde el menú admin. Formas de pago nuevas: Transferencia, Fiado y pago mixto. Fiado = cuenta corriente por cliente (deuda, cobros parciales, aviso por WhatsApp). Prueba de 14 días nueva (demoHasta, sin bloqueo) solo para cuentas nuevas. ARREGLO: la fecha del día usaba hora UTC (ventas de las 21 a 24 hs quedaban en el día siguiente); ahora hora de Argentina. Los empleados ya no se bloquean por la prueba. v2.2 — 2026-10-26 — BACKUP ARREGLADO: el botón no funcionaba (la función no era visible desde la pantalla) y el automático no guardaba nada. v2.1 — 2026-07-02 — P1+P3+P5 ROBUSTEZ -->
+<!-- MaderAR v0.2.0 — 2026-11-11 — pantalla de venta para PC con atajos, traslados entre depósitos, solapa Dueños en vivo y acceso de dueños de solo lectura. v0.1.0 — — BASE: copia de PuntoVenta v3.9 adaptada a madereras (venta por metros, compras y proveedores, importación de productos, aumentos por porcentaje). PENDIENTE: Firebase propio, reglas, íconos finales, instructivo. Historial heredado de PuntoVenta: v3.9 — 2026-11-09 — PLUS: Catálogo con stock y alertas (productos dentro del negocio, venta tocando productos, aviso de faltantes) y Tablero del dueño; ambos se activan con botones en el menú admin; cuentas anteriores y pruebas de 14 días los ven. v3.0 — 2026-11-08 — PLAN BÁSICO/AVANZADA: cuentas nuevas arrancan en Básica (Vender, Ventas, En cuenta, Gastos, Caja); Avanzada se activa desde el menú admin. Formas de pago nuevas: Transferencia, Fiado y pago mixto. Fiado = cuenta corriente por cliente (deuda, cobros parciales, aviso por WhatsApp). Prueba de 14 días nueva (demoHasta, sin bloqueo) solo para cuentas nuevas. ARREGLO: la fecha del día usaba hora UTC (ventas de las 21 a 24 hs quedaban en el día siguiente); ahora hora de Argentina. Los empleados ya no se bloquean por la prueba. v2.2 — 2026-10-26 — BACKUP ARREGLADO: el botón no funcionaba (la función no era visible desde la pantalla) y el automático no guardaba nada. v2.1 — 2026-07-02 — P1+P3+P5 ROBUSTEZ -->
 <title>MaderAR</title>
 <meta name="theme-color" content="#5a3a1e">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1084,6 +1084,7 @@ function sanitizeHTML(str){const d=document.createElement('div');d.textContent=s
 const _inviteCode=new URLSearchParams(window.location.search).get('invite');
 let activeInvite=_inviteCode?{code:_inviteCode,negocioId:null,ownerUid:null,loading:true}:null;
 let me=null, myDoc=null, myRole=null, myFeatures=null;
+let socioOwner=null;const OID=()=>socioOwner||me.uid;
 let negocios=[], ventas=[], empleados=[], empVentas=[], gastos=[], clientes=[], cuentas=[];
 let clienteEditando=null, masCuotasClienteId=null, cobrarCtx=null, selectedMedioCobrar=null;
 let currentPage="dashboard", selectedMedio=null;
@@ -1286,6 +1287,10 @@ async function loadAdminUsers(){
         ${[['basico','Básica'],['avanzada','Full']].map(([v,l])=>`<button class="btn-aplan" data-uid="${d.id}" data-val="${v}" style="padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:${((u.plan||'avanzada')===v)?'var(--gold)':'var(--surface)'};color:${((u.plan||'avanzada')===v)?'#000':'var(--text)'}">${l}</button>`).join('')}
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-top:8px">
+        <span style="font-size:12px;color:var(--muted)">Dueños con acceso de solo lectura:</span>
+        <button class="btn-adue" data-uid="${d.id}">👑 Administrar</button>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px">
         <span style="font-size:12px;color:var(--muted)">Límite de negocios:</span>
         ${[[1,'1'],[3,'Hasta 3'],[20,'Todos']].map(([v,l])=>`<button class="btn-alim" data-uid="${d.id}" data-val="${v}" style="padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:${((u.features?.limiteNegocios??1)===v)?'var(--gold)':'var(--surface)'};color:${((u.features?.limiteNegocios??1)===v)?'#000':'var(--text)'}">${l}</button>`).join('')}
       </div>
@@ -1441,7 +1446,11 @@ onAuthStateChanged(auth,async user=>{
   if(activeInvite&&!user)return; // No pisar la pantalla de invitación
   document.getElementById('loading-screen').style.display='none';
   if(user){
-    me=user;
+    me=user;socioOwner=null;
+    try{   // ¿este correo está habilitado como dueño de un negocio? (lo habilita el administrador)
+      const so=user.email?await getDoc(doc(db,'socios',user.email.toLowerCase())):null;
+      if(so&&so.exists()&&so.data().ownerUid){await entrarSocio(user,so.data());return;}
+    }catch(e){console.error('socio',e);}
     const userRef=doc(db,'usuarios',user.uid);
     let snap=await getDoc(userRef);
     if(!snap.exists()){
@@ -1485,6 +1494,18 @@ onAuthStateChanged(auth,async user=>{
     if(!activeInvite)showScreen('screen-login');
   }
 });
+async function entrarSocio(user,so){
+  socioOwner=so.ownerUid;myRole='socio';myDoc={rol:'socio',email:user.email,plan:'avanzada',status:'activo'};myFeatures={limiteNegocios:20};
+  const negSnap=await getDocs(query(collection(db,'negocios'),where('ownerUid','==',socioOwner)));
+  negocios=negSnap.docs.map(d=>({id:d.id,...d.data()}));
+  document.getElementById('owner-av').textContent=user.email.substring(0,2).toUpperCase();
+  document.getElementById('owner-av2').textContent=user.email.substring(0,2).toUpperCase();
+  document.getElementById('owner-name').textContent=user.email.split('@')[0];
+  document.getElementById('oum-email').textContent=user.email;
+  document.querySelectorAll('[data-page]').forEach(el=>{el.style.display=el.dataset.page==='duenos'?'':'none';});
+  showScreen('screen-owner');
+  renderPage('duenos');
+}
 function tieneMultiNegocio(){
   return (myFeatures?.limiteNegocios??1) > 1;
 }
@@ -1973,7 +1994,7 @@ function cerrarCajaWA(fecha){
 let _histCache={t:0,list:null};
 async function ventasHistorial(){
   if(_histCache.list&&Date.now()-_histCache.t<60000)return _histCache.list;
-  const sn=await getDocs(query(collection(db,'ventas'),where('ownerUid','==',me.uid)));
+  const sn=await getDocs(query(collection(db,'ventas'),where('ownerUid','==',OID())));
   _histCache={t:Date.now(),list:sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0))};
   return _histCache.list;
 }
@@ -2908,7 +2929,7 @@ async function guardarProductos(neg,lista){
 let proveedores=[],_comprasCache={t:0,list:null},comprasNegId=null,cpItems=[],cpMedio='efectivo',cpProv='';
 async function cargarCompras(force){
   if(!force&&_comprasCache.list&&Date.now()-_comprasCache.t<30000)return _comprasCache.list;
-  const sn=await getDocs(query(collection(db,'compras'),where('ownerUid','==',me.uid)));
+  const sn=await getDocs(query(collection(db,'compras'),where('ownerUid','==',OID())));
   const L=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
   _comprasCache={t:Date.now(),list:L};return L;
 }
@@ -2946,6 +2967,29 @@ async function renderCompras(){
   $id('cp-prov').addEventListener('click',abrirProveedores);
   el.querySelectorAll('[data-cid]').forEach(r=>r.addEventListener('click',()=>verCompra(L.find(c=>c.id===r.dataset.cid))));
 }
+// Admin: habilitar correos de dueños (solapa Dueños, solo lectura)
+document.addEventListener('click',e=>{const b=e.target.closest?.('.btn-adue');if(b)adminDuenos(b.dataset.uid);});
+async function adminDuenos(ownerUid){
+  const o=modalCompras('modal-adue',480),box=o.querySelector('.modal');
+  const pinta=async()=>{
+    let L=[];try{const sn=await getDocs(query(collection(db,'socios'),where('ownerUid','==',ownerUid)));L=sn.docs.map(d=>({id:d.id,...d.data()}));}catch(e){logError('adminDuenos',e.message);}
+    box.innerHTML=`<div class="modal-header"><span class="modal-title">👑 Dueños habilitados</span><button class="modal-close" id="ad-x">✕</button></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Entran con su cuenta de Google y ven solamente la solapa Dueños (no pueden modificar nada).</p>
+      ${L.map(x=>`<div class="fd-mov"><div class="d">${sanitizeHTML(x.email||x.id)}</div><button type="button" class="btn-sm" data-adel="${sanitizeHTML(x.id)}">Quitar</button></div>`).join('')||'<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Todavía no hay correos habilitados.</div>'}
+      <div class="field" style="margin-top:10px"><label>Correo de Google del dueño</label><input class="vd-sel" id="ad-mail" type="email" placeholder="nombre@gmail.com" style="margin:0"/></div>
+      <div class="modal-footer"><button class="btn-cancel" id="ad-cerrar">Cerrar</button><button class="btn-save" id="ad-add">Habilitar</button></div>`;
+    $id('ad-x').addEventListener('click',()=>o.classList.remove('open'));
+    $id('ad-cerrar').addEventListener('click',()=>o.classList.remove('open'));
+    box.querySelectorAll('[data-adel]').forEach(b=>b.addEventListener('click',async()=>{try{await deleteDoc(doc(db,'socios',b.dataset.adel));toast('Quitado');pinta();}catch(e){toast('No se pudo quitar','err');}}));
+    $id('ad-add').addEventListener('click',async()=>{
+      const mail=$id('ad-mail').value.trim().toLowerCase();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){toast('Escribí un correo válido','err');return;}
+      try{await setDoc(doc(db,'socios',mail),{email:mail,ownerUid,createdAt:serverTimestamp()});toast('Dueño habilitado','green');pinta();}
+      catch(e){logError('habilitarDueno',e.message);toast('No se pudo habilitar','err');}
+    });
+  };
+  o.classList.add('open');await pinta();
+}
 // ── SOLAPA DUEÑOS — tablero en tiempo real por sucursal (MaderAR)
 let _dvUnsubs=[],dvV=[],dvG=[],dvC=[],dvTimer=null;
 function duenosParar(){_dvUnsubs.forEach(u=>{try{u()}catch(_){}});_dvUnsubs=[];clearTimeout(dvTimer);}
@@ -2956,7 +3000,7 @@ function renderDuenos(){
   let listos=0;const alListo=()=>{listos++;if(listos>=3)pintaDuenos();};
   const escucha=(col,set)=>{
     let primero=true;
-    _dvUnsubs.push(onSnapshot(query(collection(db,col),where('ownerUid','==',me.uid)),snap=>{
+    _dvUnsubs.push(onSnapshot(query(collection(db,col),where('ownerUid','==',OID())),snap=>{
       set(snap.docs.map(d=>({id:d.id,...d.data()})));
       if(primero){primero=false;alListo();}else{clearTimeout(dvTimer);dvTimer=setTimeout(pintaDuenos,400);}
     },err=>{logError('duenos-'+col,err.message);el.innerHTML=emptyHTML('⚠️','No se pudo cargar el tablero','Revisá tu conexión');}));
@@ -2993,7 +3037,7 @@ async function pintaDuenos(){
 let _trasCache={t:0,list:null};
 async function cargarTraslados(force){
   if(!force&&_trasCache.list&&Date.now()-_trasCache.t<30000)return _trasCache.list;
-  const sn=await getDocs(query(collection(db,'traslados'),where('ownerUid','==',me.uid)));
+  const sn=await getDocs(query(collection(db,'traslados'),where('ownerUid','==',OID())));
   const L=sn.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
   _trasCache={t:Date.now(),list:L};return L;
 }

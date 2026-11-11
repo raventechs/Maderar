@@ -2,7 +2,7 @@ rules_version = '2';
 // MaderAR — Reglas Firestore (dueño + empleados con invitación). Base: PuntoVenta v3.0 + colecciones compras y proveedores (solo dueño).
 // Publicar en Firebase Console → proyecto de MaderAR (NO el de PuntoVenta) → Firestore Database → Reglas → pegar TODO → Publicar.
 // Estas reglas NO borran ni modifican datos: solo controlan quién puede leer/escribir.
-// v0.1.0 (11/11/2026) MaderAR. Heredado de PuntoVenta v3.0 (8/11/2026): protege 'plan' (Básica/Avanzada) y 'demoHasta' (prueba de 14 días nueva): el cliente no puede cambiarlos; al crear la cuenta solo puede ser plan 'basico' y una prueba de hasta 15 días.
+// v0.2.0 (11/11/2026) MaderAR: + traslados y socios (dueños de solo lectura). v0.1.0 MaderAR. Heredado de PuntoVenta v3.0 (8/11/2026): protege 'plan' (Básica/Avanzada) y 'demoHasta' (prueba de 14 días nueva): el cliente no puede cambiarlos; al crear la cuenta solo puede ser plan 'basico' y una prueba de hasta 15 días.
 // Requiere la versión de la app con el registro de empleados reordenado (ya publicada en main).
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -20,6 +20,12 @@ service cloud.firestore {
     }
     function yoRef() { return /databases/$(database)/documents/usuarios/$(request.auth.uid); }
     function yo() { return get(yoRef()).data; }
+    // Dueño habilitado (socio, solo lectura): el administrador carga su correo en socios/{correo}
+    function esSocio(owner) {
+      return logueado() && !esAnonimo() && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/socios/$(request.auth.token.email.lower()))
+        && get(/databases/$(database)/documents/socios/$(request.auth.token.email.lower())).data.ownerUid == owner;
+    }
     // Empleado aprobado de un negocio / dueño
     function empleadoAprobado(neg, owner) {
       return logueado() && !esAnonimo() && exists(yoRef())
@@ -65,7 +71,7 @@ service cloud.firestore {
 
     // ── Negocios ──
     match /negocios/{nid} {
-      allow read: if esDueno(resource.data.ownerUid) || esAdmin()
+      allow read: if esDueno(resource.data.ownerUid) || esAdmin() || esSocio(resource.data.ownerUid)
         || (logueado() && exists(yoRef()) && yo().get('negocioId', '') == nid);
       allow create: if esDueno(request.resource.data.ownerUid);
       allow update: if esDueno(resource.data.ownerUid) && request.resource.data.ownerUid == resource.data.ownerUid;
@@ -98,7 +104,7 @@ service cloud.firestore {
 
     // ── Ventas: dueño y empleado aprobado ──
     match /ventas/{vid} {
-      allow read: if esDueno(resource.data.ownerUid) || (logueado() && resource.data.empleadoUid == request.auth.uid) || esAdmin();
+      allow read: if esDueno(resource.data.ownerUid) || (logueado() && resource.data.empleadoUid == request.auth.uid) || esAdmin() || esSocio(resource.data.ownerUid);
       allow create: if esDueno(request.resource.data.ownerUid)
         || (request.resource.data.empleadoUid == request.auth.uid
             && empleadoAprobado(request.resource.data.negocioId, request.resource.data.ownerUid));
@@ -110,7 +116,7 @@ service cloud.firestore {
 
     // ── Gastos y clientes: solo el dueño ──
     match /gastos/{gid} {
-      allow read: if esDueno(resource.data.ownerUid) || esAdmin();
+      allow read: if esDueno(resource.data.ownerUid) || esAdmin() || esSocio(resource.data.ownerUid);
       allow create: if esDueno(request.resource.data.ownerUid);
       allow update: if esDueno(resource.data.ownerUid) && request.resource.data.ownerUid == resource.data.ownerUid;
       allow delete: if esDueno(resource.data.ownerUid);
@@ -124,11 +130,26 @@ service cloud.firestore {
 
     // ── Compras y proveedores: solo el dueño ──
     match /compras/{cid} {
-      allow read: if esDueno(resource.data.ownerUid) || esAdmin();
+      allow read: if esDueno(resource.data.ownerUid) || esAdmin() || esSocio(resource.data.ownerUid);
       allow create: if esDueno(request.resource.data.ownerUid);
       allow update: if esDueno(resource.data.ownerUid) && request.resource.data.ownerUid == resource.data.ownerUid;
       allow delete: if esDueno(resource.data.ownerUid);
     }
+    // ── Traslados entre depósitos: dueño (los socios los leen para el stock) ──
+    match /traslados/{tid} {
+      allow read: if esDueno(resource.data.ownerUid) || esAdmin() || esSocio(resource.data.ownerUid);
+      allow create: if esDueno(request.resource.data.ownerUid);
+      allow update: if esDueno(resource.data.ownerUid) && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if esDueno(resource.data.ownerUid);
+    }
+
+    // ── Dueños habilitados: solo el administrador los carga; cada uno lee únicamente el suyo ──
+    match /socios/{mail} {
+      allow get: if esAdmin() || (logueado() && request.auth.token.email_verified == true && request.auth.token.email.lower() == mail);
+      allow list: if esAdmin();
+      allow create, update, delete: if esAdmin();
+    }
+
     match /proveedores/{pid} {
       allow read: if esDueno(resource.data.ownerUid) || esAdmin();
       allow create: if esDueno(request.resource.data.ownerUid);
